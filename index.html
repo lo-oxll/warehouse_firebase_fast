@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام المخازن — مطبعة وزارة الداخلية</title>
+<style>
+/* ── DARK THEME (default) ── */
+:root{
+  --bg:#0b1120;--surface:#111827;--surface2:#1a2438;--border:#1e2d45;
+  --accent:#3b82f6;--green:#10b981;--red:#ef4444;--gold:#f59e0b;
+  --text1:#f1f5f9;--text2:#94a3b8;--text3:#475569;
+  --radius:10px;--sidebar:224px;
+  --shadow:0 2px 12px rgba(0,0,0,.4);
+}
+/* ── LIGHT THEME ── */
+html.light{
+  --bg:#f0f4f8;--surface:#ffffff;--surface2:#e8eef5;--border:#d1dce8;
+  --accent:#2563eb;--green:#059669;--red:#dc2626;--gold:#d97706;
+  --text1:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --shadow:0 2px 12px rgba(0,0,0,.10);
+}
+/* ── smooth transition on theme switch ── */
+*{transition:background-color .25s,border-color .25s,color .2s,box-shadow .25s}
+input,select,textarea,button{transition:background-color .25s,border-color .25s,color .2s}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text1);direction:rtl;font-size:14px;min-height:100vh}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text1);padding:8px 12px;font-size:13px;font-family:inherit;outline:none;transition:border-color .2s;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+textarea{min-height:50px;resize:vertical}
+button{cursor:pointer;font-family:inherit}
+.hidden{display:none!important}
+a{color:var(--accent);text-decoration:none}
+/* Login */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:radial-gradient(ellipse at 50% 30%,var(--surface2) 0%,var(--bg) 70%)}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:40px;width:380px;text-align:center}
+.login-logo{font-size:44px;margin-bottom:10px}
+.login-title{font-size:20px;font-weight:800;margin-bottom:3px}
+.login-sub{font-size:12px;color:var(--text3);margin-bottom:28px}
+.login-field{text-align:right;margin-bottom:14px}
+.login-field label{display:block;font-size:11px;color:var(--text2);font-weight:600;margin-bottom:5px}
+.btn-login{width:100%;padding:11px;border-radius:var(--radius);border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:700;margin-top:6px;transition:.2s}
+.btn-login:hover{background:#2563eb}
+.login-err{color:var(--red);font-size:12px;margin-top:8px;min-height:16px;text-align:center}
+.setup-hint{font-size:11px;color:var(--text3);margin-top:20px;background:var(--surface2);border-radius:8px;padding:14px;text-align:right;line-height:1.8}
+.setup-hint b{color:var(--gold)}
+.setup-hint a{color:var(--accent)}
+/* Shell */
+#app-shell{display:flex;min-height:100vh}
+/* Sidebar */
+.sidebar{width:var(--sidebar);background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;position:fixed;right:0;top:0;bottom:0;z-index:100;overflow-y:auto}
+.sidebar-brand{padding:18px 16px 12px;border-bottom:1px solid var(--border)}
+.brand-icon{font-size:28px;margin-bottom:4px}
+.brand-name{font-size:13px;font-weight:800}
+.brand-sub{font-size:10px;color:var(--text3)}
+.nav-section{padding:14px 16px 4px;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.7px;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:8px;padding:9px 16px;font-size:13px;color:var(--text2);cursor:pointer;transition:.15s;position:relative}
+.nav-item:hover{background:var(--surface2);color:var(--text1)}
+.nav-item.active{background:rgba(59,130,246,0.12);color:var(--accent);border-right:3px solid var(--accent)}
+.nav-icon{font-size:15px;width:20px;text-align:center}
+.badge{background:var(--accent);color:#fff;border-radius:10px;font-size:10px;font-weight:700;padding:1px 6px;margin-right:auto}
+.badge-red{background:var(--red)}
+.sidebar-foot{margin-top:auto;padding:12px 16px;border-top:1px solid var(--border)}
+.user-mail{font-size:11px;color:var(--text3);margin-bottom:8px;word-break:break-all}
+.btn-out{width:100%;padding:7px;border-radius:var(--radius);border:1px solid var(--border);background:transparent;color:var(--text2);font-size:12px;transition:.2s}
+.btn-out:hover{border-color:var(--red);color:var(--red)}
+/* Main */
+.main{margin-right:var(--sidebar);flex:1;padding:24px;overflow-x:hidden}
+/* Page header */
+.ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.ph-title{font-size:22px;font-weight:800}
+.ph-sub{font-size:12px;color:var(--text3);margin-top:3px}
+.ph-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
+.card-title{font-size:12px;font-weight:700;color:var(--text3);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.5px}
+/* Stat grid */
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+.stat-lbl{font-size:10px;color:var(--text3);margin-bottom:6px;font-weight:600}
+.stat-val{font-size:24px;font-weight:900}
+/* Form grid */
+.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.fg2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.fgroup{display:flex;flex-direction:column;gap:5px}
+.fgroup label{font-size:11px;color:var(--text2);font-weight:600}
+.s2{grid-column:span 2}.s3{grid-column:span 3}
+/* Items table */
+.itw{overflow-x:auto;margin:12px 0}
+.itable{width:100%;border-collapse:collapse;font-size:12px}
+.itable th{background:var(--surface2);padding:8px 10px;text-align:right;font-size:11px;color:var(--text3);font-weight:700;white-space:nowrap}
+.itable td{padding:6px 8px;border-bottom:1px solid var(--border)}
+/* Records */
+.rec-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:16px}
+.rec-head{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+.rec-title{font-size:14px;font-weight:700}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--surface2);padding:9px 12px;text-align:right;font-size:11px;color:var(--text3);font-weight:700;white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.015)}
+.ec{text-align:center;padding:40px;color:var(--text3);font-size:13px}
+.pc{color:var(--gold);font-weight:700}
+/* Buttons */
+.btn{padding:8px 16px;border-radius:var(--radius);border:none;font-size:13px;font-weight:600;transition:.15s}
+.btn-p{background:var(--accent);color:#fff}.btn-p:hover{background:#2563eb}
+.btn-s{background:var(--green);color:#fff}.btn-s:hover{background:#059669}
+.btn-o{background:transparent;border:1px solid var(--border);color:var(--text2)}.btn-o:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:5px 12px;font-size:12px}
+.bv{background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);color:var(--accent);padding:4px 10px;border-radius:6px;font-size:12px;margin-left:4px}
+.bd{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);color:var(--red);padding:4px 10px;border-radius:6px;font-size:12px}
+/* Chips */
+.chip{background:rgba(59,130,246,0.12);color:var(--accent);padding:2px 8px;border-radius:8px;font-size:11px;font-weight:700}
+.doc-num{background:var(--surface2);border:1px solid var(--border);padding:2px 7px;border-radius:6px;font-size:11px;font-family:monospace;color:var(--accent)}
+.b-in{color:var(--green);font-size:11px}.b-out{color:var(--red);font-size:11px}
+.sub-txt{font-size:10px;color:var(--gold);margin-top:2px}
+.type-mini{font-size:9px;padding:1px 6px;border-radius:4px;margin-right:4px;background:rgba(59,130,246,0.1);color:var(--accent)}
+/* AC */
+.ac-wrap{position:relative;display:inline-block;width:100%}
+.ac-portal{display:none;position:absolute;top:100%;right:0;min-width:300px;background:var(--surface2);border:1.5px solid var(--accent);border-radius:0 0 10px 10px;z-index:9999;max-height:200px;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+.ac-item{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;font-size:12px}
+.ac-item:hover{background:rgba(59,130,246,0.1)}
+.ac-code{color:var(--accent);min-width:65px;font-size:11px}
+/* Grand bar */
+.grand-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--surface2);border-radius:var(--radius);margin-top:12px}
+.grand-lbl{font-size:13px;color:var(--text2)}
+.grand-val{font-size:20px;font-weight:900;color:var(--gold)}
+.form-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}
+/* Filter bar */
+.fbar{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px}
+.fbar .fgroup{margin:0;min-width:130px}
+/* Dashboard */
+.alert-box{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:14px;font-size:13px}
+.alert-title{color:var(--red);font-weight:700;margin-bottom:8px;font-size:14px}
+.alert-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(239,68,68,0.08)}
+.alert-badge{background:rgba(239,68,68,0.12);color:var(--red);padding:2px 8px;border-radius:8px;font-size:11px;font-weight:700}
+.ok-box{background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.2);border-radius:10px;padding:14px;color:var(--green);font-size:13px;text-align:center}
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:300;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:720px;width:96%;max-height:90vh;overflow-y:auto}
+.modal-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.modal-close{background:none;border:none;font-size:22px;color:var(--text2);cursor:pointer;line-height:1}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:var(--surface2);border-radius:10px;padding:12px;font-size:13px;margin-bottom:14px}
+.lbl{color:var(--text3);margin-left:4px}
+/* Toast */
+#toasts{position:fixed;bottom:24px;left:24px;z-index:999;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:13px;opacity:0;transform:translateX(-16px);transition:.3s;max-width:300px}
+.toast.show{opacity:1;transform:none}
+.ts{border-color:var(--green);color:var(--green)}
+.te{border-color:var(--red);color:var(--red)}
+.ti{border-color:var(--accent);color:var(--accent)}
+/* Purchase */
+.pur-row-zero{background:rgba(239,68,68,0.03)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">🏛</div>
+    <div class="login-title">نظام إدارة المخازن</div>
+    <div class="login-sub">مطبعة وزارة الداخلية</div>
+    <div class="login-field"><label>البريد الإلكتروني</label>
+      <input type="email" id="l-email" placeholder="user@moi.gov.iq"></div>
+    <div class="login-field"><label>كلمة المرور</label>
+      <input type="password" id="l-pass" placeholder="••••••••"></div>
+    <div class="login-err" id="l-err"></div>
+    <button class="btn-login" id="l-btn" onclick="doLogin()">دخول</button>
+  
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-shell" style="display:none">
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div class="brand-icon" style="margin-bottom:0">🏛</div>
+        <button id="theme-toggle" onclick="toggleTheme()" title="تبديل الوضع" style="
+          background:var(--surface2);border:1px solid var(--border);border-radius:20px;
+          width:44px;height:24px;cursor:pointer;position:relative;padding:0;
+          transition:background .3s,border-color .3s;flex-shrink:0">
+          <span id="theme-knob" style="
+            position:absolute;top:3px;right:3px;width:16px;height:16px;border-radius:50%;
+            background:var(--accent);transition:transform .3s,background .3s;
+            display:flex;align-items:center;justify-content:center;font-size:10px">🌙</span>
+        </button>
+      </div>
+      <div class="brand-name">نظام المخازن</div>
+      <div class="brand-sub">مطبعة وزارة الداخلية</div>
+    </div>
+    <div class="nav-section">العمليات اليومية</div>
+    <div class="nav-item active" onclick="go('dashboard',this)"><span class="nav-icon">📊</span>لوحة التحكم</div>
+    <div class="nav-item" onclick="go('receive',this)"><span class="nav-icon">📥</span>استلام مخزني<span class="badge" id="b-rec">0</span></div>
+    <div class="nav-item" onclick="go('issue',this)"><span class="nav-icon">📤</span>إصدار مخزني<span class="badge" id="b-iss">0</span></div>
+    <div class="nav-section">التقارير</div>
+    <div class="nav-item" onclick="go('daily',this)"><span class="nav-icon">📅</span>كشف اليومية</div>
+    <div class="nav-item" onclick="go('stocktake',this)"><span class="nav-icon">🔢</span>جرد المستودع</div>
+    <div class="nav-item" onclick="go('inventory',this)"><span class="nav-icon">🗂</span>كشف المخزون</div>
+    <div class="nav-item" onclick="go('balance',this)"><span class="nav-icon">⚖️</span>الأرصدة المتبقية</div>
+    <div class="nav-section">الاستعلامات</div>
+    <div class="nav-item" onclick="go('catalogue',this)"><span class="nav-icon">📚</span>دليل المواد</div>
+    <div class="nav-section">الإعدادات</div>
+    <div class="nav-item" onclick="go('purchase',this)"><span class="nav-icon">🛒</span>طلبات الشراء<span class="badge badge-red" id="b-low" style="display:none">!</span></div>
+    <div class="nav-item" onclick="go('auditlog',this)"><span class="nav-icon">🔐</span>سجل المراجعة</div>
+    <div class="nav-item" onclick="go('rollover',this)"><span class="nav-icon">🔁</span>تدوير الأرصدة</div>
+    <div class="sidebar-foot">
+      <div class="user-mail" id="u-email">—</div>
+      <button class="btn-out" onclick="doLogout()">🚪 تسجيل خروج</button>
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div id="page-dashboard">
+      <div class="ph">
+        <div><div class="ph-title">📊 لوحة التحكم</div><div class="ph-sub" id="dash-date"></div></div>
+        <button class="btn btn-o btn-sm" onclick="loadAll()">🔄 تحديث</button>
+      </div>
+      <div class="stats" id="dash-stats"></div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
+        <div class="rec-card"><div class="rec-head"><div class="rec-title">⚡ آخر الحركات</div></div>
+          <div class="tw"><table><thead><tr><th>رقم الوثيقة</th><th>النوع</th><th>التاريخ</th><th>المخزن</th><th>المواد</th><th>الإجمالي</th></tr></thead>
+            <tbody id="dash-recent"><tr><td colspan="6" class="ec">لا توجد حركات بعد</td></tr></tbody></table></div></div>
+        <div id="dash-alerts"><div class="ok-box">✅ جميع المواد ضمن المستوى الطبيعي</div></div>
+      </div>
+    </div>
+
+    <!-- RECEIVE -->
+    <div id="page-receive" class="hidden">
+      <div class="ph"><div><div class="ph-title">📥 استلام مخزني</div><div class="ph-sub">تسجيل الاستلام مع بيانات وصل الشراء</div></div></div>
+      <div class="card">
+        <div class="card-title">بيانات المستند</div>
+        <div class="fg" style="margin-bottom:12px">
+          <div class="fgroup"><label>تاريخ الاستلام *</label><input type="date" id="r_date"></div>
+          <div class="fgroup"><label>رقم وثيقة الاستلام *</label><input type="text" id="r_docnum" placeholder="RCV-2025-001"></div>
+          <div class="fgroup"><label>المخزن *</label><select id="r_wh"><option value="">— اختر —</option>
+            <option value="131">131 - خامات ومواد أولية</option><option value="132">132 - وقود وزيوت</option>
+            <option value="133">133 - أدوات احتياطية</option><option value="134">134 - مواد تعبئة وتغليف</option>
+            <option value="1351">1351 - اللوازم والمهمات</option><option value="1352">1352 - القرطاسية</option>
+          </select></div>
+        </div>
+        <div class="fg" style="margin-bottom:12px">
+          <div class="fgroup" style="border-right:3px solid var(--gold);padding-right:10px"><label style="color:var(--gold)">🧾 رقم وصل الشراء *</label><input type="text" id="r_pnum" placeholder="رقم الوصل"></div>
+          <div class="fgroup" style="border-right:3px solid var(--gold);padding-right:10px"><label style="color:var(--gold)">📅 تاريخ وصل الشراء</label><input type="date" id="r_pdate"></div>
+          <div class="fgroup" style="border-right:3px solid var(--gold);padding-right:10px"><label style="color:var(--gold)">🏪 المورّد</label><input type="text" id="r_supplier" placeholder="اسم الشركة"></div>
+        </div>
+        <div class="fgroup"><label>ملاحظات</label><textarea id="r_notes" style="height:40px"></textarea></div>
+      </div>
+      <div class="card">
+        <div class="card-title">المواد</div>
+        <div class="itw"><table class="itable">
+          <thead><tr><th>#</th><th>الرقم المخزني</th><th>اسم المادة</th><th>وحدة القياس</th><th>الكمية</th><th>السعر (وصل شراء)</th><th>الإجمالي</th><th></th></tr></thead>
+          <tbody id="r_items"></tbody>
+        </table></div>
+        <button class="btn btn-o btn-sm" onclick="addRow('r')" style="margin-top:8px">+ مادة</button>
+        <div class="grand-bar"><span class="grand-lbl">الإجمالي الكلي</span><span class="grand-val" id="r-grand">0 د.ع</span></div>
+        <div class="form-foot"><button class="btn btn-o" onclick="clearF('r')">مسح</button><button class="btn btn-p" onclick="saveDoc('receive')">💾 حفظ الاستلام</button></div>
+      </div>
+      <div class="rec-card"><div class="rec-head"><div class="rec-title">📋 مستندات الاستلام</div><span id="r-count" style="font-size:12px;color:var(--text3)">0</span></div>
+        <div class="tw"><table><thead><tr><th>رقم الوثيقة</th><th>التاريخ</th><th>المخزن</th><th>المورّد</th><th>وصل الشراء</th><th>المواد</th><th>الإجمالي</th><th>إجراءات</th></tr></thead>
+          <tbody id="rec-tb"><tr><td colspan="8" class="ec">لا توجد مستندات</td></tr></tbody></table></div></div>
+    </div>
+
+    <!-- ISSUE -->
+    <div id="page-issue" class="hidden">
+      <div class="ph"><div><div class="ph-title">📤 إصدار مخزني</div><div class="ph-sub">السعر يُحسب تلقائياً بالمتوسط الوزني المرجّح</div></div></div>
+      <div class="card">
+        <div class="card-title">بيانات المستند</div>
+        <div class="fg" style="margin-bottom:12px">
+          <div class="fgroup"><label>التاريخ *</label><input type="date" id="i_date"></div>
+          <div class="fgroup"><label>رقم الوثيقة *</label><input type="text" id="i_docnum" placeholder="ISS-2025-001"></div>
+          <div class="fgroup"><label>المخزن *</label><select id="i_wh"><option value="">— اختر —</option>
+            <option value="131">131 - خامات ومواد أولية</option><option value="132">132 - وقود وزيوت</option>
+            <option value="133">133 - أدوات احتياطية</option><option value="134">134 - مواد تعبئة وتغليف</option>
+            <option value="1351">1351 - اللوازم والمهمات</option><option value="1352">1352 - القرطاسية</option>
+          </select></div>
+        </div>
+        <div class="fg" style="margin-bottom:12px">
+          <div class="fgroup"><label>نوع الجهة *</label><select id="i_rtype"><option value="">— اختر —</option>
+            <option value="internal">داخلي (قسم داخل المطبعة)</option>
+            <option value="external">خارجي (جهة حكومية)</option>
+          </select></div>
+          <div class="fgroup"><label>اسم الجهة / القسم *</label><input type="text" id="i_rname" placeholder="قسم الطباعة / مديرية الجوازات"></div>
+          <div class="fgroup"><label>اسم الموظف المستلِم</label><input type="text" id="i_rperson" placeholder="اسم الشخص"></div>
+        </div>
+        <div class="fgroup"><label>ملاحظات</label><textarea id="i_notes" style="height:40px"></textarea></div>
+      </div>
+      <div class="card">
+        <div class="card-title">المواد — السعر يُحسب تلقائياً ⌀</div>
+        <div class="itw"><table class="itable">
+          <thead><tr><th>#</th><th>الرقم المخزني</th><th>اسم المادة</th><th>الكمية</th><th>السعر الوسطي (تلقائي)</th><th>الإجمالي</th><th></th></tr></thead>
+          <tbody id="i_items"></tbody>
+        </table></div>
+        <button class="btn btn-o btn-sm" onclick="addRow('i')" style="margin-top:8px">+ مادة</button>
+        <div class="grand-bar"><span class="grand-lbl">الإجمالي الكلي</span><span class="grand-val" id="i-grand">0 د.ع</span></div>
+        <div class="form-foot"><button class="btn btn-o" onclick="clearF('i')">مسح</button><button class="btn btn-p" onclick="saveDoc('issue')">💾 حفظ الإصدار</button></div>
+      </div>
+      <div class="rec-card"><div class="rec-head"><div class="rec-title">📋 مستندات الإصدار</div><span id="i-count" style="font-size:12px;color:var(--text3)">0</span></div>
+        <div class="tw"><table><thead><tr><th>رقم الوثيقة</th><th>التاريخ</th><th>المخزن</th><th>الجهة المستلِمة</th><th>المواد</th><th>الإجمالي</th><th>إجراءات</th></tr></thead>
+          <tbody id="iss-tb"><tr><td colspan="7" class="ec">لا توجد مستندات</td></tr></tbody></table></div></div>
+    </div>
+
+    <!-- DAILY -->
+    <div id="page-daily" class="hidden">
+      <div class="ph"><div><div class="ph-title">📅 كشف اليومية</div></div><button class="btn btn-p btn-sm" onclick="runDaily()">▶ تحديث</button></div>
+      <div class="card"><div class="fbar">
+        <div class="fgroup"><label>من تاريخ</label><input type="date" id="d-from"></div>
+        <div class="fgroup"><label>حتى تاريخ</label><input type="date" id="d-to"></div>
+        <div class="fgroup"><label>المخزن</label><select id="d-wh"><option value="">كل المخازن</option>
+          <option value="131">131</option><option value="132">132</option><option value="133">133</option>
+          <option value="134">134</option><option value="1351">1351</option><option value="1352">1352</option>
+        </select></div>
+        <div style="align-self:flex-end"><button class="btn btn-p btn-sm" onclick="runDaily()">بحث</button></div>
+      </div></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px">
+        <div class="stat"><div class="stat-lbl">إجمالي الوارد</div><div class="stat-val" id="d-in" style="color:var(--green)">0</div></div>
+        <div class="stat"><div class="stat-lbl">إجمالي الصادر</div><div class="stat-val" id="d-out" style="color:var(--red)">0</div></div>
+        <div class="stat"><div class="stat-lbl">الصافي</div><div class="stat-val" id="d-net" style="color:var(--gold)">0</div></div>
+      </div>
+      <div class="rec-card"><div class="tw"><table><thead><tr><th>رقم الوثيقة</th><th>النوع</th><th>التاريخ</th><th>المخزن</th><th>المرجع</th><th>المواد</th><th>الإجمالي</th></tr></thead>
+        <tbody id="d-tb"></tbody></table></div></div>
+    </div>
+
+    <!-- STOCKTAKE -->
+    <div id="page-stocktake" class="hidden">
+      <div class="ph"><div><div class="ph-title">🔢 جرد المستودع</div></div><button class="btn btn-p btn-sm" onclick="runStocktake()">▶ تحديث</button></div>
+      <div class="card"><div class="fbar">
+        <div class="fgroup"><label>المخزن</label><select id="stk-wh"><option value="">كل المخازن</option>
+          <option value="131">131</option><option value="132">132</option><option value="133">133</option>
+          <option value="134">134</option><option value="1351">1351</option><option value="1352">1352</option>
+        </select></div>
+        <div class="fgroup"><label>حتى تاريخ</label><input type="date" id="stk-to"></div>
+      </div></div>
+      <div style="display:flex;gap:16px;margin-bottom:12px;font-size:13px;color:var(--text2)">
+        المواد: <b style="color:var(--accent)" id="stk-cnt">0</b> &nbsp;|&nbsp; القيمة: <b style="color:var(--gold)" id="stk-val">0</b> د.ع
+      </div>
+      <div class="rec-card"><div class="tw"><table><thead><tr>
+        <th style="width:44px">تسلسل</th>
+        <th>الرقم المخزني</th>
+        <th>اسم المادة</th>
+        <th>المخزن</th>
+        <th>إجمالي الوارد</th>
+        <th>إجمالي الصادر</th>
+        <th>الرصيد</th>
+        <th>السعر الوسطي</th>
+        <th>القيمة</th>
+      </tr></thead>
+        <tbody id="stk-tb"></tbody></table></div></div>
+    </div>
+
+    <!-- INVENTORY -->
+    <div id="page-inventory" class="hidden">
+      <div class="ph"><div><div class="ph-title">🗂 كشف المخزون</div><div class="ph-sub">الأرصدة الحية — تدوير + استلام − إصدار</div></div>
+        <div class="ph-actions">
+          <button class="btn btn-p btn-sm" onclick="runInv()">▶ تحديث</button>
+        </div>
+      </div>
+      <div class="card"><div class="fbar">
+        <div class="fgroup"><label>نوع الرصيد</label>
+          <select id="inv-show"><option value="pos">موجب فقط ✅</option><option value="all">الكل</option><option value="zero">صفر</option><option value="neg">سالب ⚠</option></select></div>
+        <div class="fgroup"><label>المخزن</label>
+          <select id="inv-wh"><option value="">كل المخازن</option>
+            <option value="131">131 - خامات ومواد أولية</option>
+            <option value="132">132 - وقود وزيوت</option>
+            <option value="133">133 - أدوات احتياطية</option>
+            <option value="134">134 - مواد تعبئة وتغليف</option>
+            <option value="1351">1351 - اللوازم والمهمات</option>
+            <option value="1352">1352 - القرطاسية</option>
+          </select></div>
+        <div class="fgroup"><label>بحث</label>
+          <input type="text" id="inv-q" placeholder="اسم أو رقم مخزني..." oninput="runInv()"></div>
+      </div></div>
+      <div style="display:flex;gap:16px;margin-bottom:12px;font-size:13px;color:var(--text2);flex-wrap:wrap">
+        المواد: <b style="color:var(--accent)" id="inv-cnt">0</b> &nbsp;|&nbsp;
+        قيمة المخزون: <b style="color:var(--gold)" id="inv-val">0</b> د.ع
+      </div>
+      <div class="rec-card"><div class="tw"><table>
+        <thead><tr>
+          <th style="width:44px">تسلسل</th>
+          <th>الرقم المخزني</th>
+          <th>اسم المادة</th>
+          <th>المخزن</th>
+          <th style="color:var(--gold)">تدوير 🔁</th>
+          <th>استلام</th>
+          <th style="color:var(--red)">إصدار</th>
+          <th style="font-weight:800">الرصيد</th>
+          <th>السعر الوسطي</th>
+          <th>القيمة</th>
+        </tr></thead>
+        <tbody id="inv-tb"></tbody>
+      </table></div></div>
+    </div>
+
+    <!-- BALANCE -->
+    <div id="page-balance" class="hidden">
+      <div class="ph"><div><div class="ph-title">⚖️ الأرصدة المتبقية</div></div><button class="btn btn-p btn-sm" onclick="runBal()">▶ تحديث</button></div>
+      <div class="card"><div class="fbar">
+        <div class="fgroup"><label>المخزن</label><select id="bal-wh"><option value="">كل المخازن</option>
+          <option value="131">131</option><option value="132">132</option><option value="133">133</option>
+          <option value="134">134</option><option value="1351">1351</option><option value="1352">1352</option>
+        </select></div>
+        <div class="fgroup"><label>حتى تاريخ</label><input type="date" id="bal-to"></div>
+        <div class="fgroup"><label>عرض</label><select id="bal-show"><option value="pos">موجب</option><option value="all">الكل</option><option value="zero">صفر</option><option value="neg">سالب</option></select></div>
+      </div></div>
+      <div style="display:flex;gap:16px;margin-bottom:12px;font-size:13px;color:var(--text2)">
+        المواد: <b style="color:var(--accent)" id="bal-cnt">0</b> &nbsp;|&nbsp; القيمة: <b style="color:var(--gold)" id="bal-val">0</b> د.ع
+      </div>
+      <div class="rec-card"><div class="tw"><table><thead><tr><th>#</th><th>الرقم المخزني</th><th>اسم المادة</th><th>المخزن</th><th>تدوير 🔁</th><th>استلام</th><th>إصدار</th><th>الرصيد</th><th>آخر سعر</th><th>القيمة</th></tr></thead>
+        <tbody id="bal-tb"></tbody></table></div></div>
+    </div>
+
+    <!-- CATALOGUE -->
+    <div id="page-catalogue" class="hidden">
+      <div class="ph"><div><div class="ph-title">📚 دليل المواد</div></div><button class="btn btn-p" onclick="openAddCat()">+ إضافة مادة</button></div>
+      <div class="card"><div class="fbar">
+        <div class="fgroup" style="flex:1"><label>بحث</label><input type="text" id="cat-q" placeholder="اسم أو رقم مخزني..." oninput="renderCat()"></div>
+        <div class="fgroup"><label>المخزن</label><select id="cat-wh" onchange="renderCat()"><option value="">الكل</option>
+          <option value="131">131</option><option value="132">132</option><option value="133">133</option>
+          <option value="134">134</option><option value="1351">1351</option><option value="1352">1352</option>
+        </select></div>
+      </div></div>
+      <div class="rec-card"><div class="rec-head"><div class="rec-title">المواد</div><span id="cat-cnt" style="font-size:12px;color:var(--text3)">0 مادة</span></div>
+        <div class="tw"><table><thead><tr><th>#</th><th>الرقم المخزني</th><th>اسم المادة</th><th>المخزن</th><th>وحدة القياس</th><th>الحد الأدنى</th><th>المصدر</th><th>إجراءات</th></tr></thead>
+          <tbody id="cat-tb"></tbody></table></div></div>
+      <!-- Cat Modal -->
+      <div id="cat-modal" class="modal-bg" style="display:none">
+        <div class="modal-box">
+          <div class="modal-hd"><span id="cat-mtitle" style="font-size:16px;font-weight:700">إضافة مادة</span>
+            <button class="modal-close" onclick="closeCatModal()">✕</button></div>
+          <input type="hidden" id="cat-id">
+          <div class="fg" style="margin-bottom:12px">
+            <div class="fgroup"><label>الرقم المخزني</label><input type="text" id="cat-sn" placeholder="مثال: 5002"></div>
+            <div class="fgroup s2"><label>اسم المادة *</label><input type="text" id="cat-name" placeholder="اسم المادة"></div>
+          </div>
+          <div class="fg" style="margin-bottom:12px">
+            <div class="fgroup"><label>المخزن</label><select id="cat-wh2"><option value="">غير محدد</option>
+              <option value="131">131</option><option value="132">132</option><option value="133">133</option>
+              <option value="134">134</option><option value="1351">1351</option><option value="1352">1352</option>
+            </select></div>
+            <div class="fgroup"><label>وحدة القياس</label><input type="text" id="cat-unit" placeholder="قطعة / كغ / لتر"></div>
+            <div class="fgroup"><label>الحد الأدنى</label><input type="number" id="cat-min" value="0" min="0"></div>
+          </div>
+          <div class="fgroup" style="margin-bottom:16px"><label>ملاحظات</label><textarea id="cat-notes"></textarea></div>
+          <div class="form-foot">
+            <button class="btn btn-o" onclick="closeCatModal()">إلغاء</button>
+            <button class="btn btn-p" onclick="saveCat()">💾 حفظ</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PURCHASE -->
+    <div id="page-purchase" class="hidden">
+      <div class="ph"><div><div class="ph-title">🛒 طلبات الشراء</div><div class="ph-sub">المواد التي وصلت حدها الأدنى — محدّثة تلقائياً</div></div>
+        <button class="btn btn-p btn-sm" onclick="runPurchase()">▶ تحديث</button></div>
+      <div class="card" style="font-size:12px;color:var(--text2)">💡 الحد الأدنى يُحدَّد في <b>دليل المواد</b> → حقل "الحد الأدنى"</div>
+      <div class="stats" id="pur-stats"></div>
+      <div class="rec-card"><div class="rec-head"><div class="rec-title">قائمة الشراء المقترحة</div><span id="pur-cnt" style="font-size:12px;color:var(--red)">0</span></div>
+        <div class="tw"><table><thead><tr><th>#</th><th>الرقم المخزني</th><th>اسم المادة</th><th>المخزن</th><th>الرصيد</th><th>الحد الأدنى</th><th>الكمية المقترحة</th><th>الحالة</th></tr></thead>
+          <tbody id="pur-tb"></tbody></table></div></div>
+    </div>
+
+    <!-- AUDIT LOG -->
+    <div id="page-auditlog" class="hidden">
+      <div class="ph"><div><div class="ph-title">🔐 سجل المراجعة</div><div class="ph-sub">كل العمليات محفوظة في Firebase — لا يمكن حذفها</div></div>
+        <button class="btn btn-o btn-sm" onclick="loadAudit()">🔄 تحديث</button></div>
+      <div class="card"><div class="fbar">
+        <div class="fgroup" style="flex:1"><label>بحث</label><input type="text" id="al-q" placeholder="بحث في السجل..." oninput="renderAudit()"></div>
+        <div class="fgroup"><label>نوع العملية</label><select id="al-type" onchange="renderAudit()">
+          <option value="">الكل</option><option value="CREATE">إنشاء ✅</option>
+          <option value="DELETE">حذف 🗑</option><option value="ROLLOVER">تدوير 🔁</option>
+          <option value="LOGIN">دخول 🔑</option></select></div>
+      </div></div>
+      <div class="rec-card"><div class="rec-head"><div class="rec-title">سجل العمليات</div><span id="al-cnt" style="font-size:12px;color:var(--text3)">0</span></div>
+        <div class="tw"><table><thead><tr><th>#</th><th>التاريخ والوقت</th><th>نوع العملية</th><th>المستند</th><th>التفاصيل</th><th>المستخدم</th></tr></thead>
+          <tbody id="al-tb"></tbody></table></div></div>
+    </div>
+
+    <!-- ROLLOVER -->
+    <div id="page-rollover" class="hidden">
+      <div class="ph"><div><div class="ph-title">🔁 تدوير الأرصدة</div><div class="ph-sub">استيراد أرصدة افتتاحية من Excel — حسب نوع كل مخزن</div></div></div>
+      <div class="card">
+        <div class="card-title">اختر طريقة التدوير</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:6px">
+          <div id="ro-opt-a" onclick="selRoMode('excel')" style="border:2px solid var(--border);border-radius:12px;padding:18px;cursor:pointer">
+            <div style="font-size:22px;margin-bottom:8px">📊</div>
+            <div style="font-weight:700;margin-bottom:4px">ملف Excel واحد</div>
+            <div style="font-size:12px;color:var(--text3)">يحتوي عمود رقم المخزن — يُوزَّع تلقائياً</div>
+          </div>
+          <div id="ro-opt-b" onclick="selRoMode('manual')" style="border:2px solid var(--border);border-radius:12px;padding:18px;cursor:pointer">
+            <div style="font-size:22px;margin-bottom:8px">🗂</div>
+            <div style="font-weight:700;margin-bottom:4px">ملف لكل مخزن</div>
+            <div style="font-size:12px;color:var(--text3)">ارفع ملف Excel منفصل لكل من المخازن الستة</div>
+          </div>
+        </div>
+      </div>
+      <!-- Excel mode -->
+      <div id="ro-excel" class="hidden">
+        <div class="card"><div class="card-title">رفع الملف وربط الأعمدة</div>
+          <label class="btn btn-p btn-sm" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer">
+            📂 اختر ملف Excel <input type="file" accept=".xlsx,.xls" id="ro-file" onchange="loadRoFile(event)" style="display:none">
+          </label>
+          <div id="ro-file-info" style="margin-top:12px"></div>
+        </div>
+        <div id="ro-map-card" class="card hidden">
+          <div class="card-title">ربط الأعمدة</div>
+          <div id="ro-map-grid" class="fg" style="margin-bottom:14px"></div>
+          <div id="ro-preview" class="hidden"><div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px">👁 معاينة:</div>
+            <div class="tw" style="max-height:160px;overflow-y:auto"><table id="ro-prev-table" style="font-size:11px"></table></div></div>
+          <div style="display:flex;gap:10px;margin-top:14px">
+            <button class="btn btn-o btn-sm" onclick="prevRo()">👁 معاينة</button>
+            <button class="btn btn-p" onclick="applyRo()">✅ تطبيق التدوير</button>
+            <button class="btn btn-o btn-sm" onclick="resetRo()">↩ إعادة</button>
+          </div>
+        </div>
+      </div>
+      <!-- Manual mode -->
+      <div id="ro-manual" class="hidden">
+        <div class="card"><div class="card-title">رفع ملف لكل مخزن</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px" id="ro-wh-grid"></div>
+          <div style="margin-top:16px;display:flex;gap:10px">
+            <button class="btn btn-p" onclick="applyManualRo()">✅ تطبيق التدوير للمخازن المرفوعة</button>
+            <button class="btn btn-o btn-sm" onclick="resetRo()">↩ إعادة</button>
+          </div>
+        </div>
+      </div>
+      <!-- Result -->
+      <div id="ro-result" class="card hidden">
+        <div class="card-title">نتيجة التدوير</div>
+        <div id="ro-res-info" style="margin-bottom:14px"></div>
+        <div id="ro-tabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"></div>
+        <div id="ro-tab-content"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div id="toasts"></div>
+
+<!-- View doc modal (shared) -->
+<div id="view-modal" class="modal-bg" style="display:none">
+  <div class="modal-box">
+    <div class="modal-hd"><div id="vm-title" style="font-size:17px;font-weight:700">—</div>
+      <button class="modal-close" onclick="document.getElementById('view-modal').style.display='none'">✕</button></div>
+    <div id="vm-info" class="info-grid"></div>
+    <div class="tw"><table><thead id="vm-head"></thead><tbody id="vm-body"></tbody></table></div>
+    <div id="vm-total" style="text-align:left;margin-top:14px;font-size:20px;font-weight:900;color:var(--gold)"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp }    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc as fbDeleteDoc,
+         getDocs, query, orderBy, serverTimestamp, writeBatch }
+         from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+         from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+// ═══════════════════════════════════════════════════════════
+//  🔥 FIREBASE CONFIG — ضع إعداداتك هنا
+//  اذهب: console.firebase.google.com → مشروعك → Project Settings → Your apps
+// ═══════════════════════════════════════════════════════════
+const FC = {
+  apiKey:            "AIzaSyDY9PQHnderMdfzWM04MbNLeI6kOA9q7AA",
+  authDomain:        "inventory-control-accountant.firebaseapp.com",
+  projectId:         "inventory-control-accountant",
+  storageBucket:     "inventory-control-accountant.firebasestorage.app",
+  messagingSenderId: "586830596390",
+  appId:             "1:586830596390:web:1cf8a10824c94db6e6d9e7",
+  measurementId:     "G-3YRRBRLHLW"
+};
+// ═══════════════════════════════════════════════════════════
+
+const app  = initializeApp(FC);
+const db   = getFirestore(app);
+const auth = getAuth(app);
+
+// ── Data cache ──
+let REC=[], ISS=[], CAT=[], AUD=[];
+let ME = null;
+
+// ── Collections ──
+const C = { rec:'receive', iss:'issue', cat:'catalogue', aud:'audit' };
+
+// ── Expose globals needed by inline handlers ──
+const W = window;
+
+// ═══════════════════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════════════════
+onAuthStateChanged(auth, u => {
+  ME = u;
+  if (u) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-shell').style.display    = 'flex';
+    document.getElementById('u-email').textContent        = u.email;
+    loadAll();
+    addAudit('LOGIN', { detail:'دخول: '+u.email });
+  } else {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('app-shell').style.display    = 'none';
+  }
+});
+
+W.doLogin = async () => {
+  const e=gv('l-email'), p=gv('l-pass');
+  const btn=document.getElementById('l-btn'), err=document.getElementById('l-err');
+  err.textContent=''; btn.textContent='...'; btn.disabled=true;
+  try { await signInWithEmailAndPassword(auth,e,p); }
+  catch(ex){ err.textContent='بيانات الدخول غير صحيحة'; btn.textContent='دخول'; btn.disabled=false; }
+};
+W.doLogout = async () => { await addAudit('LOGOUT',{detail:'خروج: '+(ME?.email||'')}); await signOut(auth); };
+
+// ═══════════════════════════════════════════════════════════
+//  LOAD ALL DATA
+// ═══════════════════════════════════════════════════════════
+W.loadAll = async () => {
+  toast('⏳ تحميل البيانات...','i');
+  try {
+    const [r,i,c] = await Promise.all([
+      getDocs(query(collection(db,C.rec), orderBy('date','desc'))),
+      getDocs(query(collection(db,C.iss), orderBy('date','desc'))),
+      getDocs(query(collection(db,C.cat), orderBy('name','asc'))),
+    ]);
+    REC = r.docs.map(d=>({id:d.id,...d.data()}));
+    ISS = i.docs.map(d=>({id:d.id,...d.data()}));
+    CAT = c.docs.map(d=>({id:d.id,...d.data()}));
+    updateDash(); renderRec(); renderIss();
+    st('b-rec', REC.length); st('b-iss', ISS.length);
+    // purchase badge
+    const low = computeBal().filter(b=>{
+      const c2=CAT.find(x=>x.name.toLowerCase()===b.name.toLowerCase());
+      return c2&&c2.minQty>0&&b.balance<=c2.minQty;
+    });
+    const lb=document.getElementById('b-low');
+    if(lb){lb.style.display=low.length?'inline':'none';lb.textContent=low.length;}
+    toast('✅ جاهز','s');
+  } catch(ex){ toast('⚠ تحقق من إعدادات Firebase: '+ex.message,'e'); }
+};
+
+// ═══════════════════════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════════════════════
+function updateDash() {
+  const bal   = computeBal();
+  const pos   = bal.filter(b=>b.balance>0).length;
+  const zero  = bal.filter(b=>b.balance===0).length;
+  const neg   = bal.filter(b=>b.balance<0).length;
+  const tval  = bal.reduce((s,b)=>s+Math.max(0,b.balValue),0);
+  const today = new Date().toISOString().split('T')[0];
+  const tRec  = REC.filter(d=>d.date===today).length;
+  const tIss  = ISS.filter(d=>d.date===today).length;
+  const low   = bal.filter(b=>{
+    const c=CAT.find(x=>x.name.toLowerCase()===b.name.toLowerCase());
+    return c&&c.minQty>0&&b.balance<=c.minQty;
+  });
+
+  document.getElementById('dash-stats').innerHTML=`
+    <div class="stat"><div class="stat-lbl">رصيد موجب ✅</div><div class="stat-val" style="color:var(--green)">${pos}</div></div>
+    <div class="stat"><div class="stat-lbl">رصيد صفر ⬜</div><div class="stat-val" style="color:var(--text2)">${zero}</div></div>
+    <div class="stat"><div class="stat-lbl">رصيد سالب ⚠</div><div class="stat-val" style="color:var(--red)">${neg}</div></div>
+    <div class="stat"><div class="stat-lbl">تنبيه نقص 🔴</div><div class="stat-val" style="color:var(--red)">${low.length}</div></div>
+    <div class="stat"><div class="stat-lbl">استلام اليوم</div><div class="stat-val" style="color:var(--accent)">${tRec}</div></div>
+    <div class="stat"><div class="stat-lbl">إصدار اليوم</div><div class="stat-val" style="color:var(--accent)">${tIss}</div></div>
+    <div class="stat"><div class="stat-lbl">مواد الدليل</div><div class="stat-val">${CAT.length}</div></div>
+    <div class="stat"><div class="stat-lbl">قيمة المخزون</div><div class="stat-val" style="color:var(--gold);font-size:16px">${N(tval)}</div><div style="font-size:10px;color:var(--text3)">د.ع</div></div>
+  `;
+
+  const all=[...REC.slice(0,5).map(d=>({...d,_t:'r'})),...ISS.slice(0,5).map(d=>({...d,_t:'i'}))]
+    .sort((a,b)=>b.date.localeCompare(a.date)).slice(0,8);
+  document.getElementById('dash-recent').innerHTML=all.length
+    ?all.map(d=>`<tr>
+      <td><span class="doc-num">${d.docnum}</span></td>
+      <td>${d._t==='r'?'<span class="b-in">📥 استلام</span>':'<span class="b-out">📤 إصدار</span>'}</td>
+      <td>${fd(d.date)}</td><td><span class="chip">${d.wh||d.warehouse||'—'}</span></td>
+      <td>${d.items?.length||0} مادة</td><td class="pc">${N(d.grandTotal)}</td></tr>`).join('')
+    :'<tr><td colspan="6" class="ec">لا توجد حركات بعد</td></tr>';
+
+  document.getElementById('dash-alerts').innerHTML=low.length
+    ?`<div class="alert-box"><div class="alert-title">⚠ نقص مخزون — ${low.length} مادة</div>
+      ${low.slice(0,6).map(b=>`<div class="alert-row"><span>${b.name}</span><span class="alert-badge">${b.balance} متبقي</span></div>`).join('')}
+      ${low.length>6?`<div style="font-size:11px;color:var(--text3);margin-top:4px">... و${low.length-6} مادة أخرى</div>`:''}</div>`
+    :'<div class="ok-box">✅ جميع المواد ضمن المستوى الطبيعي</div>';
+
+  document.getElementById('dash-date').textContent=
+    new Date().toLocaleDateString('ar-IQ',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+
+// ═══════════════════════════════════════════════════════════
+//  COMPUTE BALANCES (core engine)
+// ═══════════════════════════════════════════════════════════
+W.computeBal = function(toDate='', whFilter='') {
+  const map={};
+
+  const addRows = (docs, type) => {
+    docs.forEach(d => {
+      const code = (d.wh || d.warehouse || '').split(' ')[0] || '';
+      if (whFilter && code !== whFilter) return;
+      const isRo = (type==='r') && (d.isRollover === true);
+      (d.items||[]).forEach(it => {
+        if (toDate && d.date > toDate) return;
+        const key = (it.storeNum||it.name).toLowerCase() + '|' + code;
+        if (!map[key]) map[key] = {
+          storeNum: it.storeNum||'', name: it.name,
+          code, wh: d.wh||d.warehouse||'',
+          ro:0, recQty:0, outQty:0, lastPrice:0
+        };
+        if (type==='r') {
+          isRo ? (map[key].ro += it.qty) : (map[key].recQty += it.qty);
+          if (it.price > 0) map[key].lastPrice = it.price;
+        } else {
+          map[key].outQty += it.qty;
+        }
+      });
+    });
+  };
+
+  addRows(REC, 'r');
+  addRows(ISS, 'i');
+
+  return Object.values(map).map(d => {
+    const balance = d.ro + d.recQty - d.outQty;
+    return { ...d, balance, balValue: balance * d.lastPrice };
+  }).sort((a,b) => a.name.localeCompare(b.name, 'ar'));
+};
+
+// ═══════════════════════════════════════════════════════════
+//  WAVG PRICE
+// ═══════════════════════════════════════════════════════════
+function wavg(name,sn='') {
+  let q=0,v=0; const lc=name.toLowerCase(), s=sn.toLowerCase();
+  REC.forEach(d=>(d.items||[]).forEach(it=>{
+    if((it.name.toLowerCase()===lc||(s&&it.storeNum?.toLowerCase()===s))&&it.qty>0&&it.price>0)
+      {q+=it.qty;v+=it.qty*it.price;}
+  }));
+  return q>0?v/q:0;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SAVE DOCUMENT
+// ═══════════════════════════════════════════════════════════
+W.saveDoc = async type => {
+  const p=type==='receive'?'r':'i';
+  const date=gv(p+'_date'), docnum=gv(p+'_docnum'),
+        wh=gv(p===('r')?'r_wh':'i_wh'), notes=gv(p+'_notes');
+  if(!date||!docnum||!wh){ toast('يرجى ملء الحقول المطلوبة (*)','e'); return; }
+
+  const pnum=gv('r_pnum'), pdate=gv('r_pdate'), supplier=gv('r_supplier');
+  const rtype=gv('i_rtype'), rname=gv('i_rname'), rperson=gv('i_rperson');
+  if(type==='receive'&&!pnum){ toast('أدخل رقم وصل الشراء *','e'); return; }
+  if(type==='issue'&&!rname){ toast('أدخل اسم الجهة المستلِمة *','e'); return; }
+
+  const items=collectRows(p+'_items');
+  if(!items.length){ toast('أضف مادة واحدة على الأقل','e'); return; }
+
+  if(type==='issue') items.forEach(it=>{
+    if(!it.price){ it.price=wavg(it.name,it.storeNum); it.total=it.qty*it.price; }
+  });
+
+  const grandTotal=items.reduce((s,i)=>s+i.total,0);
+  const seq=(type==='receive'?'RCV':'ISS')+'-'+Date.now().toString().slice(-6);
+  const data={ seq,date,docnum,wh,notes,items,grandTotal,
+    type,createdAt:serverTimestamp(),createdBy:ME?.email||'',
+    ...(type==='receive'?{pnum,pdate,supplier}:{rtype,rname,rperson}),
+  };
+
+  try{
+    const ref=await addDoc(collection(db,type==='receive'?C.rec:C.iss),data);
+    const obj={id:ref.id,...data};
+    type==='receive'?REC.unshift(obj):ISS.unshift(obj);
+    clearF(p); renderRec(); renderIss(); updateDash();
+    st('b-rec',REC.length); st('b-iss',ISS.length);
+    toast('✅ تم الحفظ بنجاح','s');
+    // ── العمليات الثانوية (السجل + مزامنة الكتالوج) تعمل بالخلفية دون تعطيل الواجهة ──
+    addAudit('CREATE',{docType:type==='receive'?'استلام':'إصدار',docnum,wh,
+      detail:`${items.length} مادة`+(type==='receive'?` — وصل: ${pnum}`:` — جهة: ${rname}`),
+      value:grandTotal});
+    if(type==='receive') syncCat(items,wh);
+  }catch(ex){toast('❌ '+ex.message,'e');}
+};
+
+// ═══════════════════════════════════════════════════════════
+//  DELETE DOCUMENT
+// ═══════════════════════════════════════════════════════════
+W.delDoc = async (type,id,docnum) => {
+  if(!confirm(`حذف وثيقة ${docnum}؟ لا يمكن التراجع.`)) return;
+  const col=type==='receive'?C.rec:C.iss;
+  try{
+    await fbDeleteDoc(doc(db,col,id));
+    if(type==='receive') REC=REC.filter(d=>d.id!==id);
+    else ISS=ISS.filter(d=>d.id!==id);
+    renderRec(); renderIss(); updateDash();
+    st('b-rec',REC.length); st('b-iss',ISS.length);
+    toast('🗑 تم الحذف','i');
+    addAudit('DELETE',{docType:type==='receive'?'استلام':'إصدار',docnum,detail:'حذف مستند'});
+  }catch(ex){toast('❌ '+ex.message,'e');}
+};
+
+// ═══════════════════════════════════════════════════════════
+//  RENDER TABLES
+// ═══════════════════════════════════════════════════════════
+function renderRec() {
+  st('r-count',REC.length);
+  const tb=document.getElementById('rec-tb');
+  if(!tb) return;
+  tb.innerHTML=REC.length?REC.map(d=>`<tr>
+    <td><span class="doc-num">${d.docnum}</span>${d.pnum?`<div class="sub-txt">🧾 ${d.pnum}</div>`:''}</td>
+    <td>${fd(d.date)}</td><td><span class="chip">${d.wh||'—'}</span></td>
+    <td>${d.supplier||'—'}</td><td><span style="color:var(--gold)">${d.pnum||'—'}</span></td>
+    <td>${d.items?.length||0}</td><td class="pc">${N(d.grandTotal)}</td>
+    <td><button class="bv" onclick='showDoc(${JSON.stringify(d)})'>👁</button>
+        <button class="bd" onclick="delDoc('receive','${d.id}','${d.docnum}')">🗑</button></td>
+  </tr>`).join(''):'<tr><td colspan="8" class="ec">لا توجد مستندات استلام</td></tr>';
+}
+
+function renderIss() {
+  st('i-count',ISS.length);
+  const tb=document.getElementById('iss-tb');
+  if(!tb) return;
+  tb.innerHTML=ISS.length?ISS.map(d=>`<tr>
+    <td><span class="doc-num">${d.docnum}</span></td>
+    <td>${fd(d.date)}</td><td><span class="chip">${d.wh||'—'}</span></td>
+    <td><span style="color:${d.rtype==='internal'?'var(--green)':'var(--gold)'};font-weight:600">${d.rname||'—'}</span>
+      ${d.rtype?`<span class="type-mini">${d.rtype==='internal'?'داخلي':'خارجي'}</span>`:''}
+    </td>
+    <td>${d.items?.length||0}</td><td class="pc">${N(d.grandTotal)}</td>
+    <td><button class="bv" onclick='showDoc(${JSON.stringify(d)})'>👁</button>
+        <button class="bd" onclick="delDoc('issue','${d.id}','${d.docnum}')">🗑</button></td>
+  </tr>`).join(''):'<tr><td colspan="7" class="ec">لا توجد مستندات إصدار</td></tr>';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  VIEW DOC MODAL
+// ═══════════════════════════════════════════════════════════
+W.showDoc = d => {
+  const isR=d.type==='receive';
+  document.getElementById('vm-title').innerHTML=
+    `${isR?'📥 استلام':'📤 إصدار'} — <span class="doc-num">${d.docnum}</span>`;
+  document.getElementById('vm-info').innerHTML=`
+    <div><span class="lbl">التاريخ:</span> ${fd(d.date)}</div>
+    <div><span class="lbl">المخزن:</span> <span class="chip">${d.wh||'—'}</span></div>
+    ${isR&&d.pnum?`<div><span class="lbl">وصل الشراء:</span> <b style="color:var(--gold)">${d.pnum}</b></div>
+      <div><span class="lbl">المورّد:</span> ${d.supplier||'—'}</div>`:''}
+    ${!isR&&d.rname?`<div><span class="lbl">الجهة:</span> <b>${d.rname}</b>
+      <span class="type-mini">${d.rtype==='internal'?'داخلي':'خارجي'}</span></div>
+      ${d.rperson?`<div><span class="lbl">المستلِم:</span> ${d.rperson}</div>`:''}`:''}
+    ${d.notes?`<div style="grid-column:span 2"><span class="lbl">ملاحظات:</span> ${d.notes}</div>`:''}
+  `;
+  document.getElementById('vm-head').innerHTML=`<tr><th>#</th><th>الرقم المخزني</th><th>اسم المادة</th>
+    ${isR?'<th>وحدة القياس</th>':''}<th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr>`;
+  document.getElementById('vm-body').innerHTML=(d.items||[]).map((it,i)=>`<tr>
+    <td>${i+1}</td><td><span class="doc-num">${it.storeNum||'—'}</span></td>
+    <td style="font-weight:600">${it.name}</td>
+    ${isR?`<td>${it.unit||'—'}</td>`:''}
+    <td>${N(it.qty)}</td><td>${N(it.price)}</td><td class="pc">${N(it.total)}</td></tr>`).join('');
+  document.getElementById('vm-total').innerHTML=`الإجمالي: ${N(d.grandTotal)} <span style="font-size:13px">د.ع</span>`;
+  document.getElementById('view-modal').style.display='flex';
+};
+
+// ═══════════════════════════════════════════════════════════
+//  REPORTS
+// ═══════════════════════════════════════════════════════════
+W.runDaily = () => {
+  const f=gv('d-from'),t=gv('d-to'),w=gv('d-wh');
+  const recs=REC.filter(d=>(!f||d.date>=f)&&(!t||d.date<=t)&&(!w||(d.wh||d.warehouse||'').startsWith(w)));
+  const iss =ISS.filter(d=>(!f||d.date>=f)&&(!t||d.date<=t)&&(!w||(d.wh||d.warehouse||'').startsWith(w)));
+  const inT=recs.reduce((s,d)=>s+d.grandTotal,0);
+  const outT=iss.reduce((s,d)=>s+d.grandTotal,0);
+  st('d-in',N(inT)); st('d-out',N(outT)); st('d-net',N(inT-outT));
+  const all=[...recs.map(d=>({...d,_t:'r'})),...iss.map(d=>({...d,_t:'i'}))]
+    .sort((a,b)=>b.date.localeCompare(a.date));
+  document.getElementById('d-tb').innerHTML=all.length?all.map(d=>`<tr>
+    <td><span class="doc-num">${d.docnum}</span></td>
+    <td>${d._t==='r'?'<span class="b-in">📥 استلام</span>':'<span class="b-out">📤 إصدار</span>'}</td>
+    <td>${fd(d.date)}</td><td><span class="chip">${d.wh||'—'}</span></td>
+    <td>${d._t==='r'?(d.pnum||'—'):(d.rname||'—')}</td>
+    <td>${d.items?.length||0} مادة</td><td class="pc">${N(d.grandTotal)}</td></tr>`).join('')
+    :'<tr><td colspan="7" class="ec">لا توجد حركات في هذه الفترة</td></tr>';
+};
+
+W.runStocktake = () => {
+  const w=gv('stk-wh'), t=gv('stk-to');
+  const bal = W.computeBal(t, w);
+  const tv  = bal.reduce((s,b)=>s+Math.max(0,b.balValue),0);
+  st('stk-cnt', bal.length);
+  st('stk-val', N(tv));
+  document.getElementById('stk-tb').innerHTML = bal.length
+    ? bal.map((b,i) => {
+        const bc = b.balance>0?'var(--green)':b.balance<0?'var(--red)':'var(--text3)';
+        return `<tr>
+          <td style="color:var(--text3);font-weight:700;text-align:center">${i+1}</td>
+          <td><span class="doc-num">${b.storeNum||'—'}</span></td>
+          <td style="font-weight:600">${b.name}</td>
+          <td><span class="chip">${b.code}</span></td>
+          <td style="color:var(--accent);text-align:center">${N(b.ro+b.recQty)}</td>
+          <td style="color:var(--red);text-align:center">${N(b.outQty)}</td>
+          <td style="color:${bc};font-weight:900;text-align:center">${N(b.balance)}</td>
+          <td style="text-align:center">${N(b.lastPrice)}</td>
+          <td class="pc">${N(b.balValue)}</td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="9" class="ec">لا توجد بيانات — أضف استلام أو تدوير أرصدة أولاً</td></tr>';
+};
+
+W.runInv = () => {
+  const w=gv('inv-wh'), show=gv('inv-show'), q=gv('inv-q').toLowerCase();
+  let bal = W.computeBal('', w);
+  if (show==='pos')  bal = bal.filter(b=>b.balance>0);
+  if (show==='zero') bal = bal.filter(b=>b.balance===0);
+  if (show==='neg')  bal = bal.filter(b=>b.balance<0);
+  if (q) bal = bal.filter(b=>b.name.toLowerCase().includes(q) || b.storeNum.includes(q));
+
+  const tv = bal.reduce((s,b)=>s+Math.max(0,b.balValue),0);
+  st('inv-cnt', bal.length);
+  st('inv-val', N(tv));
+
+  document.getElementById('inv-tb').innerHTML = bal.length
+    ? bal.map((b,i) => {
+        const bc = b.balance>0?'var(--green)':b.balance<0?'var(--red)':'var(--text3)';
+        const inTotal = b.ro + b.recQty;
+        return `<tr>
+          <td style="color:var(--text3);font-weight:700;text-align:center">${i+1}</td>
+          <td><span class="doc-num">${b.storeNum||'—'}</span></td>
+          <td style="font-weight:600">${b.name}</td>
+          <td><span class="chip">${b.code}</span></td>
+          <td style="color:var(--gold);text-align:center">${b.ro>0?N(b.ro):'—'}</td>
+          <td style="color:var(--accent);text-align:center">${b.recQty>0?N(b.recQty):'—'}</td>
+          <td style="color:var(--red);text-align:center">${b.outQty>0?N(b.outQty):'—'}</td>
+          <td style="color:${bc};font-weight:900;font-size:15px;text-align:center">${N(b.balance)}</td>
+          <td style="text-align:center">${N(b.lastPrice)}</td>
+          <td class="pc">${N(b.balValue)}</td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="10" class="ec">لا توجد نتائج — تحقق من الفلاتر أو أضف بيانات</td></tr>';
+};
+
+W.runBal = () => {
+  const w=gv('bal-wh'),t=gv('bal-to'),show=gv('bal-show');
+  let bal=W.computeBal(t,w);
+  if(show==='pos')  bal=bal.filter(b=>b.balance>0);
+  if(show==='zero') bal=bal.filter(b=>b.balance===0);
+  if(show==='neg')  bal=bal.filter(b=>b.balance<0);
+  const tv=bal.reduce((s,b)=>s+Math.max(0,b.balValue),0);
+  st('bal-cnt',bal.length); st('bal-val',N(tv));
+  document.getElementById('bal-tb').innerHTML=bal.length?bal.map((b,i)=>{
+    const c=b.balance>0?'var(--green)':b.balance<0?'var(--red)':'var(--text3)';
+    return `<tr><td>${i+1}</td><td><span class="doc-num">${b.storeNum||'—'}</span></td>
+      <td style="font-weight:600">${b.name}</td><td><span class="chip">${b.code}</span></td>
+      <td style="color:var(--gold)">${N(b.ro)}</td>
+      <td style="color:var(--accent)">${N(b.recQty)}</td>
+      <td style="color:var(--red)">${N(b.outQty)}</td>
+      <td style="color:${c};font-weight:800;font-size:15px">${N(b.balance)}</td>
+      <td>${N(b.lastPrice)}</td><td class="pc">${N(b.balValue)}</td></tr>`;
+  }).join(''):'<tr><td colspan="10" class="ec">لا توجد بيانات</td></tr>';
+};
+
+// ═══════════════════════════════════════════════════════════
+//  CATALOGUE
+// ═══════════════════════════════════════════════════════════
+W.renderCat = () => {
+  const q=gv('cat-q').toLowerCase(), w=gv('cat-wh');
+  let list=CAT.filter(c=>(!q||(c.name.toLowerCase().includes(q)||c.storeNum?.includes(q)))&&(!w||c.warehouse===w));
+  st('cat-cnt', list.length+' مادة');
+  document.getElementById('cat-tb').innerHTML=list.length?list.map((c,i)=>`<tr>
+    <td>${i+1}</td><td><span class="doc-num">${c.storeNum||'—'}</span></td>
+    <td style="font-weight:600">${c.name}</td><td><span class="chip">${c.warehouse||'—'}</span></td>
+    <td>${c.unit||'—'}</td><td>${c.minQty||0}</td>
+    <td style="font-size:10px;color:var(--text3)">${c.source||'—'}</td>
+    <td><button class="bv" onclick="editCat('${c.id}')">✏</button>
+        <button class="bd" onclick="rmCat('${c.id}','${c.name.replace(/'/g,"\\'")}')">🗑</button></td>
+  </tr>`).join(''):'<tr><td colspan="8" class="ec">لا توجد مواد في الدليل</td></tr>';
+};
+
+W.openAddCat = () => {
+  document.getElementById('cat-mtitle').textContent='+ إضافة مادة';
+  document.getElementById('cat-id').value='';
+  ['cat-sn','cat-name','cat-unit','cat-notes'].forEach(id=>sv(id,''));
+  sv('cat-wh2',''); sv('cat-min','0');
+  document.getElementById('cat-modal').style.display='flex';
+};
+W.editCat = id => {
+  const c=CAT.find(x=>x.id===id); if(!c) return;
+  document.getElementById('cat-mtitle').textContent='✏ تعديل مادة';
+  document.getElementById('cat-id').value=id;
+  sv('cat-sn',c.storeNum||''); sv('cat-name',c.name); sv('cat-wh2',c.warehouse||'');
+  sv('cat-unit',c.unit||''); sv('cat-min',c.minQty||0); sv('cat-notes',c.notes||'');
+  document.getElementById('cat-modal').style.display='flex';
+};
+W.saveCat = async () => {
+  const name=gv('cat-name').trim();
+  if(!name){toast('أدخل اسم المادة','e');return;}
+  const id=document.getElementById('cat-id').value;
+  const data={storeNum:gv('cat-sn').trim(),name,warehouse:gv('cat-wh2'),
+    unit:gv('cat-unit').trim(),minQty:parseFloat(gv('cat-min'))||0,notes:gv('cat-notes').trim()};
+  try{
+    if(id){
+      await updateDoc(doc(db,C.cat,id),data);
+      const i=CAT.findIndex(x=>x.id===id);
+      if(i>=0) CAT[i]={...CAT[i],...data};
+    }else{
+      const ref=await addDoc(collection(db,C.cat),{...data,source:'يدوي',createdAt:serverTimestamp()});
+      CAT.push({id:ref.id,...data,source:'يدوي'});
+      CAT.sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+    }
+    W.closeCatModal(); W.renderCat(); toast('✅ تم الحفظ','s');
+  }catch(ex){toast('❌ '+ex.message,'e');}
+};
+W.rmCat = async (id,name) => {
+  if(!confirm(`حذف "${name}" من الدليل؟`)) return;
+  await fbDeleteDoc(doc(db,C.cat,id));
+  CAT=CAT.filter(c=>c.id!==id); W.renderCat(); toast('🗑 تم الحذف','i');
+};
+W.closeCatModal=()=>document.getElementById('cat-modal').style.display='none';
+
+async function syncCat(items,wh) {
+  const code=wh?.split(' ')[0]||wh||'';
+  const batch=writeBatch(db);
+  let n=0;
+  for(const it of items){
+    const ex=CAT.find(c=>c.name.toLowerCase()===it.name.toLowerCase());
+    if(!ex){
+      const ref=doc(collection(db,C.cat));
+      batch.set(ref,{storeNum:it.storeNum||'',name:it.name,unit:it.unit||'',
+        warehouse:code,minQty:0,notes:'',source:'استلام',createdAt:serverTimestamp()});
+      CAT.push({id:ref.id,storeNum:it.storeNum||'',name:it.name,unit:it.unit||'',warehouse:code,minQty:0,source:'استلام'});
+      n++;
+    } else if(!ex.storeNum&&it.storeNum){
+      batch.update(doc(db,C.cat,ex.id),{storeNum:it.storeNum}); ex.storeNum=it.storeNum;
+      n++;
+    }
+  }
+  if(n) await batch.commit();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PURCHASE ALERTS
+// ═══════════════════════════════════════════════════════════
+W.runPurchase = () => {
+  const bal=W.computeBal();
+  const res=[];
+  bal.forEach(b=>{
+    const c=CAT.find(x=>x.name.toLowerCase()===b.name.toLowerCase());
+    if(!c||!c.minQty||b.balance>c.minQty) return;
+    res.push({...b,minQty:c.minQty,status:b.balance<=0?'zero':'low',
+      suggested:Math.max(c.minQty*2-b.balance,c.minQty)});
+  });
+  const zeros=res.filter(r=>r.status==='zero').length;
+  document.getElementById('pur-stats').innerHTML=`
+    <div class="stat"><div class="stat-lbl">تحتاج شراء</div><div class="stat-val" style="color:var(--red)">${res.length}</div></div>
+    <div class="stat"><div class="stat-lbl">نفذت تماماً 🔴</div><div class="stat-val" style="color:var(--red)">${zeros}</div></div>
+    <div class="stat"><div class="stat-lbl">منخفضة 🟡</div><div class="stat-val" style="color:var(--gold)">${res.length-zeros}</div></div>
+  `;
+  st('pur-cnt', res.length+' مادة');
+  document.getElementById('pur-tb').innerHTML=res.length?res.map((r,i)=>`<tr class="${r.status==='zero'?'pur-row-zero':''}">
+    <td>${i+1}</td><td><span class="doc-num">${r.storeNum||'—'}</span></td>
+    <td style="font-weight:600">${r.name}</td><td><span class="chip">${r.code}</span></td>
+    <td style="color:${r.status==='zero'?'var(--red)':'var(--gold)'};font-weight:700">${N(r.balance)}</td>
+    <td>${N(r.minQty)}</td><td style="color:var(--accent);font-weight:700">${N(r.suggested)}</td>
+    <td><span style="padding:3px 10px;border-radius:10px;font-size:11px;font-weight:700;
+      background:${r.status==='zero'?'rgba(239,68,68,0.12)':'rgba(245,158,11,0.12)'};
+      color:${r.status==='zero'?'var(--red)':'var(--gold)'}">${r.status==='zero'?'🔴 نفذ':'🟡 منخفض'}</span></td>
+  </tr>`).join(''):'<tr><td colspan="8" class="ec">✅ جميع المواد ضمن المستوى المطلوب</td></tr>';
+};
+
+// ═══════════════════════════════════════════════════════════
+//  AUDIT LOG
+// ═══════════════════════════════════════════════════════════
+async function addAudit(action,{docType='',docnum='',wh='',detail='',value=0}={}) {
+  try{
+    await addDoc(collection(db,C.aud),{action,docType,docnum,warehouse:wh,detail,value,
+      user:ME?.email||'system',tsISO:new Date().toISOString(),createdAt:serverTimestamp()});
+  }catch(e){console.warn('audit:',e);}
+}
+
+W.loadAudit = async () => {
+  try{
+    const snap=await getDocs(query(collection(db,C.aud),orderBy('tsISO','desc')));
+    AUD=snap.docs.map(d=>({id:d.id,...d.data()}));
+    W.renderAudit();
+  }catch(ex){toast('❌ '+ex.message,'e');}
+};
+
+W.renderAudit = () => {
+  const q=gv('al-q').toLowerCase(), t=gv('al-type');
+  let list=AUD.filter(e=>(!t||e.action===t)&&(!q||e.detail?.toLowerCase().includes(q)||e.docnum?.includes(q)));
+  st('al-cnt', list.length);
+  const cm={CREATE:'var(--green)',DELETE:'var(--red)',EDIT:'var(--accent)',ROLLOVER:'var(--gold)',LOGIN:'var(--text2)',LOGOUT:'var(--text2)'};
+  const lm={CREATE:'✅ إنشاء',DELETE:'🗑 حذف',EDIT:'✏ تعديل',ROLLOVER:'🔁 تدوير',LOGIN:'🔑 دخول',LOGOUT:'🚪 خروج'};
+  document.getElementById('al-tb').innerHTML=list.length?list.map((e,i)=>`<tr>
+    <td>${i+1}</td>
+    <td style="font-size:11px;white-space:nowrap">${e.tsISO?.slice(0,16).replace('T',' ')||'—'}</td>
+    <td><span style="padding:2px 8px;border-radius:8px;font-size:11px;font-weight:700;
+      background:${cm[e.action]||'var(--accent)'}22;color:${cm[e.action]||'var(--accent)'}">${lm[e.action]||e.action}</span></td>
+    <td style="font-size:12px">${e.docType||'—'} ${e.docnum?`<span class="doc-num">${e.docnum}</span>`:''}</td>
+    <td style="font-size:11px;color:var(--text2)">${e.detail||'—'}</td>
+    <td style="font-size:11px;color:var(--text3)">${e.user||'—'}</td></tr>`).join('')
+    :'<tr><td colspan="6" class="ec">لا توجد سجلات</td></tr>';
+};
+
+// ═══════════════════════════════════════════════════════════
+//  ROLLOVER
+// ═══════════════════════════════════════════════════════════
+const WH_LIST=[{code:'131',name:'خامات ومواد أولية'},{code:'132',name:'وقود وزيوت'},
+  {code:'133',name:'أدوات احتياطية'},{code:'134',name:'مواد تعبئة وتغليف'},
+  {code:'1351',name:'اللوازم والمهمات'},{code:'1352',name:'القرطاسية'}];
+const RO_FIELDS=[{key:'storeNum',lbl:'الرقم المخزني',req:false},{key:'name',lbl:'اسم المادة',req:true},
+  {key:'wh',lbl:'رقم المخزن',req:false},{key:'qty',lbl:'الكمية',req:true},
+  {key:'parts',lbl:'الأجزاء',req:false},{key:'price',lbl:'السعر الوسطي',req:false}];
+let roRaw=[],roHdrs=[],roMaps={},roData={},roMode='';
+
+W.selRoMode = mode => {
+  roMode=mode;
+  document.getElementById('ro-opt-a').style.borderColor=mode==='excel'?'var(--accent)':'var(--border)';
+  document.getElementById('ro-opt-b').style.borderColor=mode==='manual'?'var(--accent)':'var(--border)';
+  document.getElementById('ro-excel').classList.toggle('hidden', mode!=='excel');
+  document.getElementById('ro-manual').classList.toggle('hidden', mode!=='manual');
+  if(mode==='manual') buildWhGrid();
+};
+
+W.loadRoFile = ev => {
+  const file=ev.target.files[0]; if(!file) return;
+  const rd=new FileReader();
+  rd.onload=e=>{
+    const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
+    const raw=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''});
+    let hi=0,mf=0;
+    for(let i=0;i<Math.min(10,raw.length);i++){const f=raw[i].filter(c=>String(c).trim()).length;if(f>mf){mf=f;hi=i;}}
+    roHdrs=raw[hi].map(c=>String(c).trim());
+    roRaw=raw.slice(hi+1).filter(r=>r.some(c=>String(c).trim()));
+    document.getElementById('ro-file-info').innerHTML=
+      `<div style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);border-radius:8px;padding:10px;font-size:12px">
+      ✅ <b>${file.name}</b> — ${roRaw.length} صف — ${roHdrs.length} عمود</div>`;
+    roMaps={};
+    roHdrs.forEach((h,i)=>{
+      const l=h.toLowerCase();
+      if(!roMaps.storeNum&&(l.includes('رقم')||l.includes('مخزني')||l.includes('كود'))) roMaps.storeNum=i;
+      else if(!roMaps.name&&(l.includes('اسم')||l.includes('مادة')||l.includes('بند'))) roMaps.name=i;
+      else if(!roMaps.wh&&l.includes('مخزن')&&!l.includes('اسم')) roMaps.wh=i;
+      else if(!roMaps.qty&&(l.includes('عدد')||l.includes('كمية'))) roMaps.qty=i;
+      else if(!roMaps.price&&(l.includes('سعر')||l.includes('وسطي'))) roMaps.price=i;
+    });
+    buildRoMapGrid();
+    document.getElementById('ro-map-card').classList.remove('hidden');
+  };
+  rd.readAsArrayBuffer(file);
+  ev.target.value='';
+};
+
+function buildRoMapGrid(){
+  const opts=roHdrs.map((h,i)=>`<option value="${i}">${h||'عمود '+(i+1)}</option>`).join('');
+  document.getElementById('ro-map-grid').innerHTML=RO_FIELDS.map(f=>`
+    <div class="fgroup"><label>${f.lbl}${f.req?' *':''}</label>
+      <select id="ro_${f.key}" style="font-size:12px">${f.req?'':'<option value="">— تجاهل —</option>'}${opts}</select></div>`).join('');
+  RO_FIELDS.forEach(f=>{const el=document.getElementById('ro_'+f.key);if(el&&roMaps[f.key]!==undefined)el.value=roMaps[f.key];});
+}
+
+function readRoMaps(){roMaps={};RO_FIELDS.forEach(f=>{const v=document.getElementById('ro_'+f.key)?.value;if(v!==''&&v!==undefined)roMaps[f.key]=parseInt(v);});}
+
+function parseRoRow(r){
+  const g=k=>roMaps[k]!==undefined?String(r[roMaps[k]]||'').trim():'';
+  let sn=g('storeNum'); const name=g('name');
+  if(!sn&&name){
+    const lc=name.toLowerCase();
+    const ch=CAT.find(c=>c.name.toLowerCase()===lc&&c.storeNum);
+    if(ch) sn=ch.storeNum;
+  }
+  let wh=g('wh'); if(wh) wh=wh.split(/\s/)[0].trim();
+  return {storeNum:sn,name,wh,qty:parseFloat(g('qty').replace(/,/g,''))||0,
+    parts:parseFloat((g('parts')||'0').replace(/,/g,''))||0,
+    price:parseFloat((g('price')||'0').replace(/,/g,''))||0};
+}
+
+W.prevRo=()=>{
+  readRoMaps();
+  const prev=roRaw.slice(0,5).map(r=>parseRoRow(r)).filter(r=>r.name);
+  if(!prev.length){toast('لم يُعثر على بيانات — تحقق من ربط الأعمدة','e');return;}
+  document.getElementById('ro-prev-table').innerHTML=
+    `<thead><tr><th>#</th><th>الرقم المخزني</th><th>اسم المادة</th><th>المخزن</th><th>الكمية</th><th>السعر</th></tr></thead>
+    <tbody>${prev.map((r,i)=>`<tr><td>${i+1}</td><td><span class="doc-num">${r.storeNum||'—'}</span></td>
+      <td>${r.name}</td><td><span class="chip">${r.wh||'—'}</span></td><td>${N(r.qty)}</td><td>${N(r.price)}</td></tr>`).join('')}</tbody>`;
+  document.getElementById('ro-preview').classList.remove('hidden');
+  toast('✅ معاينة جاهزة','s');
+};
+
+W.applyRo=()=>{
+  readRoMaps();
+  if(roMaps.name===undefined){toast('حدد عمود اسم المادة *','e');return;}
+  const rows=roRaw.map(r=>parseRoRow(r)).filter(r=>r.name&&r.qty>0);
+  if(!rows.length){toast('لم يُعثر على بيانات','e');return;}
+  const byWH={};
+  rows.forEach(r=>{const c=WH_LIST.some(w=>w.code===r.wh)?r.wh:'عام';(byWH[c]=byWH[c]||[]).push(r);});
+  execRollover(byWH);
+};
+
+function buildWhGrid(){
+  const grid=document.getElementById('ro-wh-grid');
+  // Build cards with data attributes — no inline onchange that breaks on re-render
+  grid.innerHTML=WH_LIST.map(w=>{
+    const rows=roData[w.code]||[];
+    return `<div data-wh-code="${w.code}" style="border:1px solid ${rows.length?'var(--green)':'var(--border)'};border-radius:12px;padding:14px">
+      <div style="font-size:20px;font-weight:900;color:var(--accent)">${w.code}</div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:6px">${w.name}</div>
+      <div class="wh-status">${rows.length
+        ?`<div style="font-size:12px;color:var(--green);font-weight:700;margin-bottom:8px">✅ ${rows.length} مادة جاهزة</div>`
+        :`<div style="font-size:12px;color:var(--text3);margin-bottom:8px">لم يُرفع ملف بعد</div>`
+      }</div>
+      <div class="wh-actions">${rows.length
+        ?`<label class="btn btn-o btn-sm" style="cursor:pointer;display:inline-block">🔄 تغيير
+            <input type="file" accept=".xlsx,.xls" style="display:none" data-code="${w.code}"></label>`
+        :`<label class="btn btn-p btn-sm" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+            📤 رفع Excel <input type="file" accept=".xlsx,.xls" style="display:none" data-code="${w.code}"></label>`
+      }</div>
+    </div>`;
+  }).join('');
+
+  // Single event delegation on the grid — survives card re-renders
+  // Remove old listener if any, then add fresh one
+  grid._whHandler && grid.removeEventListener('change', grid._whHandler);
+  grid._whHandler = ev => {
+    if(ev.target.type !== 'file') return;
+    const code = ev.target.dataset.code;
+    if(code) W.loadWhFile(ev, code);
+  };
+  grid.addEventListener('change', grid._whHandler);
+}
+
+W.loadWhFile=(ev,code)=>{
+  const file=ev.target.files[0];if(!file)return;
+  // Read the file data into an ArrayBuffer immediately before any async work
+  const rd=new FileReader();
+  rd.onload=e=>{
+    try{
+      const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
+      const raw=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''});
+      let hi=0,mf=0;
+      for(let i=0;i<Math.min(10,raw.length);i++){const f=raw[i].filter(c=>String(c).trim()).length;if(f>mf){mf=f;hi=i;}}
+      const hdrs=raw[hi].map(c=>String(c).trim());
+      const ci=kws=>{for(const kw of kws){const i=hdrs.findIndex(h=>h.toLowerCase().includes(kw));if(i>=0)return i;}return -1;};
+      // يدعم تنسيق: البند، الرقم، الاسم، العدد، الأجزاء، السعر الوسطي، القيمة
+      const sc=ci(['البند','تسلسل','ت']),
+            nc=ci(['الرقم المخزني','رقم مخزني','الرقم','رقم','مخزني','كود']),
+            na=ci(['الاسم','اسم','مادة','بند']),
+            qc=ci(['العدد','عدد','كمية']),
+            ptc=ci(['الأجزاء','اجزاء','أجزاء']),
+            pc=ci(['السعر الوسطي','سعر وسطي','سعر','وسطي']);
+      const parsed=[];
+      raw.slice(hi+1).forEach(r=>{
+        const name=String(na>=0?r[na]:(r[2]||r[1]||'')).trim();
+        if(!name||name.toLowerCase().includes('إجمالي')||name.toLowerCase().includes('المجموع'))return;
+        const qty=parseFloat(String(qc>=0?r[qc]:r[3]).replace(/,/g,''))||0;
+        if(!qty)return;
+        let sn=String(nc>=0?r[nc]:(r[1]||'')).trim();
+        if(!sn){const lc=name.toLowerCase();const ch=CAT.find(c=>c.name.toLowerCase()===lc&&c.storeNum);if(ch)sn=ch.storeNum;}
+        const parts=parseFloat(String(ptc>=0?r[ptc]:'0').replace(/,/g,''))||0;
+        const price=parseFloat(String(pc>=0?r[pc]:r[5]).replace(/,/g,''))||0;
+        parsed.push({storeNum:sn,name,wh:code,qty,parts,price});
+      });
+      roData[code]=parsed;
+      // Update only this card's display — don't rebuild the whole grid (that resets other inputs)
+      updateWhCard(code);
+      toast(`✅ مخزن ${code}: ${parsed.length} مادة جاهزة`,'s');
+    }catch(ex){toast(`❌ خطأ في قراءة ملف مخزن ${code}: ${ex.message}`,'e');}
+  };
+  rd.readAsArrayBuffer(file);
+  // Clear input value AFTER starting the read, inside a timeout so FileReader isn't interrupted
+  setTimeout(()=>{ try{ev.target.value='';}catch(e){} },100);
+};
+
+// Update a single warehouse card without rebuilding the whole grid
+function updateWhCard(code){
+  const rows=roData[code]||[];
+  const card=document.querySelector(`[data-wh-code="${code}"]`);
+  if(!card) return;
+  const status=card.querySelector('.wh-status');
+  const actions=card.querySelector('.wh-actions');
+  if(status) status.innerHTML=rows.length
+    ?`<div style="font-size:12px;color:var(--green);font-weight:700;margin-bottom:8px">✅ ${rows.length} مادة جاهزة</div>`
+    :`<div style="font-size:12px;color:var(--text3);margin-bottom:8px">لم يُرفع ملف بعد</div>`;
+  if(actions) actions.innerHTML=rows.length
+    ?`<label class="btn btn-o btn-sm" style="cursor:pointer;display:inline-block">🔄 تغيير
+        <input type="file" accept=".xlsx,.xls" style="display:none" data-code="${code}"></label>`
+    :`<label class="btn btn-p btn-sm" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+        📤 رفع Excel <input type="file" accept=".xlsx,.xls" style="display:none" data-code="${code}"></label>`;
+  card.style.borderColor=rows.length?'var(--green)':'var(--border)';
+}
+
+W.applyManualRo=()=>{
+  const loaded=Object.keys(roData).filter(c=>(roData[c]||[]).length>0);
+  if(!loaded.length){toast('ارفع ملفاً لمخزن واحد على الأقل','e');return;}
+  execRollover({...roData});
+};
+
+async function execRollover(byWH){
+  const today = new Date().toISOString().split('T')[0];
+  const label = 'تدوير أرصدة ' + new Date().toLocaleDateString('ar-EG-u-ca-gregory');
+  const codes  = Object.keys(byWH).filter(c=>(byWH[c]||[]).length>0);
+  const total  = codes.reduce((s,c)=>s+(byWH[c]||[]).length, 0);
+  let catAdded = 0;
+
+  const WH_NAMES = {
+    '131':'خامات ومواد أولية','132':'وقود وزيوت','133':'أدوات احتياطية',
+    '134':'مواد تعبئة وتغليف','1351':'اللوازم والمهمات','1352':'القرطاسية'
+  };
+
+  toast(`⏳ جارٍ حفظ ${total} مادة في Firebase...`, 'i');
+
+  // ── Firestore has a 500-operation limit per batch. We build batches that
+  //    contain: 1 receive-doc set + up to N catalogue set/update ops, and
+  //    split into multiple batches if a warehouse pushes past the limit.
+  const MAX_OPS = 450; // safety margin under Firestore's 500 cap
+  const rolloverFiles = []; // { code, name, rows } for Excel export after save
+
+  for (const code of codes) {
+    const rows = byWH[code]||[];
+    if (!rows.length) continue;
+
+    const whName = `${code} ${WH_NAMES[code]||''}`.trim();
+    const items  = rows.map(r=>({
+      storeNum: r.storeNum||'',
+      name:     r.name,
+      unit:     r.unit||'',
+      qty:      r.qty,
+      parts:    r.parts||0,
+      price:    r.price||0,
+      total:    r.qty*(r.price||0)
+    }));
+    const grand = items.reduce((s,i)=>s+i.total, 0);
+    const seq   = 'RO-'+code+'-'+Date.now().toString().slice(-5);
+
+    const docData = {
+      seq, date:today, docnum:seq,
+      wh: code,               // ← حقل المخزن القصير للفلترة
+      warehouse: whName,      // ← الاسم الكامل للعرض
+      notes: label,
+      items, grandTotal:grand,
+      type: 'receive',
+      isRollover: true,       // ← علامة التدوير
+      createdAt: serverTimestamp(),
+      createdBy: ME?.email||'system'
+    };
+
+    // ── Pre-compute catalogue diffs for this warehouse (no network calls yet) ──
+    const catOps = []; // { kind:'new'|'fillSn', ref?, data?, exObj?, storeNum? }
+    const seenNames = new Set();
+    for (const it of items) {
+      const lc = it.name.toLowerCase();
+      if (seenNames.has(lc)) continue; // avoid duplicate catalogue ops within same upload
+      seenNames.add(lc);
+      const ex = CAT.find(c => c.name.toLowerCase() === lc);
+      if (!ex) {
+        catOps.push({ kind:'new', name: it.name, storeNum: it.storeNum||'', unit: it.unit||'' });
+      } else if (!ex.storeNum && it.storeNum) {
+        catOps.push({ kind:'fillSn', exObj: ex, storeNum: it.storeNum });
+      }
+    }
+
+    // ── Build + commit batch(es): 1 receive doc + catalogue ops, chunked under MAX_OPS ──
+    let recRef = doc(collection(db, C.rec)); // pre-generate ref so we can push to REC immediately
+    let batch = writeBatch(db);
+    let opsInBatch = 0;
+    batch.set(recRef, docData);
+    opsInBatch++;
+
+    const commitsPending = [];
+    for (const op of catOps) {
+      if (opsInBatch >= MAX_OPS) {
+        commitsPending.push(batch.commit());
+        batch = writeBatch(db);
+        opsInBatch = 0;
+      }
+      if (op.kind === 'new') {
+        const ref2 = doc(collection(db, C.cat));
+        batch.set(ref2, {
+          storeNum: op.storeNum, name: op.name, warehouse: code,
+          unit: op.unit, minQty: 0, source: 'تدوير', createdAt: serverTimestamp()
+        });
+        CAT.push({ id: ref2.id, storeNum: op.storeNum, name: op.name,
+          warehouse: code, unit: op.unit, minQty: 0, source: 'تدوير' });
+        catAdded++;
+      } else if (op.kind === 'fillSn') {
+        batch.update(doc(db, C.cat, op.exObj.id), { storeNum: op.storeNum });
+        op.exObj.storeNum = op.storeNum;
+      }
+      opsInBatch++;
+    }
+    commitsPending.push(batch.commit());
+
+    try {
+      await Promise.all(commitsPending);
+      REC.unshift({ id: recRef.id, ...docData });
+      rolloverFiles.push({ code, name: WH_NAMES[code]||code, rows });
+      toast(`✅ مخزن ${code}: تم حفظ ${rows.length} مادة`, 's');
+      console.log(`✅ Rollover saved: ${code} — ${rows.length} items — doc:${recRef.id}`);
+    } catch(ex) {
+      console.error(`❌ Rollover failed for ${code}:`, ex);
+      toast(`❌ فشل حفظ مخزن ${code}: ${ex.message}`, 'e');
+    }
+  }
+
+  await addAudit('ROLLOVER', {
+    docType:'تدوير أرصدة', wh:codes.join('،'),
+    detail:`${total} مادة — مخازن: ${codes.join('، ')}`
+  });
+
+  // تحديث الواجهة
+  document.getElementById('ro-res-info').innerHTML=`
+    <div style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);border-radius:10px;padding:14px">
+      ✅ <b>تم حفظ تدوير الأرصدة في Firebase بنجاح</b>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px">
+        <div class="stat"><div class="stat-lbl">المواد المدوّرة</div><div class="stat-val" style="color:var(--accent)">${total}</div></div>
+        <div class="stat"><div class="stat-lbl">المخازن</div><div class="stat-val" style="color:var(--gold)">${codes.length}</div></div>
+        <div class="stat"><div class="stat-lbl">أُضيف للدليل</div><div class="stat-val" style="color:var(--green)">${catAdded}</div></div>
+        <div class="stat"><div class="stat-lbl">الحالة</div><div class="stat-val" style="font-size:14px">✅ محفوظ</div></div>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--text2)">
+        💡 البيانات محفوظة في Firebase وتظهر الآن في: كاتلوج المواد • جرد المستودع • الأرصدة المتبقية • كشف اليومية
+      </div>
+      <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px">
+        ${rolloverFiles.map(f=>`<button class="btn btn-o btn-sm" onclick="downloadRoExcel('${f.code}')">📥 تنزيل Excel — مخزن ${f.code}</button>`).join('')}
+        ${rolloverFiles.length>1?`<button class="btn btn-s btn-sm" onclick="downloadRoExcelAll()">📦 تنزيل الكل (ملف موحّد)</button>`:''}
+      </div>
+    </div>`;
+  W._lastRolloverFiles = rolloverFiles; // store for download functions
+
+  // تبويبات المخازن
+  document.getElementById('ro-tabs').innerHTML = codes.map((c,i)=>
+    `<button id="ro-t-${c}" onclick="showRoTab('${c}')"
+      style="padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;
+      border:1px solid ${i===0?'var(--accent)':'var(--border)'};
+      background:${i===0?'rgba(59,130,246,.1)':'transparent'};
+      color:${i===0?'var(--accent)':'var(--text2)'}">
+      ${c} <span style="font-size:10px;opacity:.7">(${(byWH[c]||[]).length})</span>
+    </button>`).join('');
+
+  document.getElementById('ro-tab-content').innerHTML = codes.map((c,i)=>{
+    const rows = byWH[c]||[];
+    const tv   = rows.reduce((s,r)=>s+r.qty*(r.price||0), 0);
+    return `<div id="ro-tc-${c}" ${i>0?'class="hidden"':''}>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:8px">
+        مخزن <b>${c}</b> — ${WH_NAMES[c]||''} &nbsp;|&nbsp;
+        <span style="color:var(--accent)">${rows.length} مادة</span> &nbsp;|&nbsp;
+        <span style="color:var(--gold)">القيمة: ${N(tv)} د.ع</span>
+      </div>
+      <div class="tw" style="max-height:320px;overflow-y:auto"><table>
+        <thead><tr><th>البند</th><th>الرقم</th><th>الاسم</th><th>العدد</th><th>الأجزاء</th><th>السعر الوسطي</th><th>القيمة</th><th>الحالة</th></tr></thead>
+        <tbody>${rows.map((r,j)=>`<tr>
+          <td style="color:var(--text3)">${j+1}</td>
+          <td><span class="doc-num">${r.storeNum||'—'}</span></td>
+          <td style="font-weight:600">${r.name}</td>
+          <td style="text-align:center">${N(r.qty)}</td>
+          <td style="text-align:center">${N(r.parts||0)}</td>
+          <td style="text-align:center">${N(r.price)}</td>
+          <td class="pc">${N(r.qty*(r.price||0))}</td>
+          <td><span style="color:var(--green);font-size:11px">✅ محفوظ في Firebase</span></td>
+        </tr>`).join('')}</tbody>
+      </table></div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('ro-result').classList.remove('hidden');
+  document.getElementById('ro-result').scrollIntoView({behavior:'smooth'});
+  CAT.sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+  W.renderCat && W.renderCat();
+  W.runInv && W.runInv();
+  W.runBal && W.runBal();
+  updateDash(); renderRec();
+  st('b-rec', REC.length);
+  toast(`✅ تم تدوير وحفظ ${total} مادة في ${codes.length} مخازن`, 's');
+}
+
+// ── تصدير ملفات Excel لتدوير الأرصدة بصيغة: البند، الرقم، الاسم، العدد، الأجزاء، السعر الوسطي، القيمة ──
+function buildRoSheet(wb, code, name, rows) {
+  const data = [
+    ['البند','الرقم','الاسم','العدد','الأجزاء','السعر الوسطي','القيمة']
+  ];
+  rows.forEach((r,i)=>{
+    data.push([
+      i+1,
+      r.storeNum||'',
+      r.name,
+      r.qty,
+      r.parts||0,
+      r.price||0,
+      r.qty*(r.price||0)
+    ]);
+  });
+  const totalVal = rows.reduce((s,r)=>s+r.qty*(r.price||0),0);
+  data.push(['', '', 'الإجمالي', '', '', '', totalVal]);
+
+  const ws = XLSX.utils.aoa_to_sheet(data);
+  ws['!cols'] = [{wch:8},{wch:16},{wch:34},{wch:10},{wch:10},{wch:16},{wch:18}];
+  ws['!rtl'] = true;
+  XLSX.utils.book_append_sheet(wb, ws, `${code}`);
+}
+
+W.downloadRoExcel = code => {
+  const files = W._lastRolloverFiles||[];
+  const f = files.find(x=>x.code===code);
+  if(!f){ toast('تعذر إيجاد بيانات هذا المخزن','e'); return; }
+  const wb = XLSX.utils.book_new();
+  buildRoSheet(wb, f.code, f.name, f.rows);
+  XLSX.writeFile(wb, `تدوير_مخزن_${f.code}_${f.name.replace(/\s+/g,'_')}.xlsx`);
+  toast(`📥 تم تنزيل ملف مخزن ${code}`, 's');
+};
+
+W.downloadRoExcelAll = () => {
+  const files = W._lastRolloverFiles||[];
+  if(!files.length){ toast('لا توجد بيانات للتصدير','e'); return; }
+  const wb = XLSX.utils.book_new();
+  files.forEach(f=>buildRoSheet(wb, f.code, f.name, f.rows));
+  XLSX.writeFile(wb, `تدوير_جميع_المخازن_${new Date().toISOString().split('T')[0]}.xlsx`);
+  toast('📦 تم تنزيل الملف الموحّد', 's');
+};
+
+W.showRoTab=code=>{
+  document.querySelectorAll('[id^="ro-tc-"]').forEach(el=>el.classList.add('hidden'));
+  document.querySelectorAll('[id^="ro-t-"]').forEach(btn=>{
+    btn.style.borderColor='var(--border)';btn.style.background='transparent';btn.style.color='var(--text2)';
+  });
+  document.getElementById('ro-tc-'+code)?.classList.remove('hidden');
+  const btn=document.getElementById('ro-t-'+code);
+  if(btn){btn.style.borderColor='var(--accent)';btn.style.background='rgba(59,130,246,.1)';btn.style.color='var(--accent)';}
+};
+
+W.resetRo=()=>{
+  roRaw=[];roHdrs=[];roMaps={};roData={};
+  ['ro-excel','ro-manual','ro-map-card','ro-preview','ro-result'].forEach(id=>document.getElementById(id)?.classList.add('hidden'));
+  document.getElementById('ro-file-info').innerHTML='';
+  document.getElementById('ro-file').value='';
+  ['ro-opt-a','ro-opt-b'].forEach(id=>document.getElementById(id).style.borderColor='var(--border)');
+  roMode='';
+};
+
+// ═══════════════════════════════════════════════════════════
+//  ITEM ROWS (forms)
+// ═══════════════════════════════════════════════════════════
+W.addRow = prefix => {
+  const tb=document.getElementById(prefix+'_items');
+  const idx=tb.rows.length+1;
+  const isR=prefix==='r';
+  const tr=tb.insertRow();
+  tr.innerHTML=`
+    <td style="color:var(--text3)">${idx}</td>
+    <td><div class="ac-wrap">
+      <input type="text" class="sn-in" placeholder="رقم مخزني" style="width:100px"
+        oninput="snInput(this,'${prefix}')" onfocus="showAC(this,'${prefix}','sn')" onblur="hideAC(this)" autocomplete="off">
+      <div class="ac-portal"></div></div></td>
+    <td><div class="ac-wrap">
+      <input type="text" class="na-in" placeholder="اسم المادة" style="width:160px"
+        oninput="naInput(this,'${prefix}')" onfocus="showAC(this,'${prefix}','na')" onblur="hideAC(this)" autocomplete="off">
+      <div class="ac-portal"></div></div></td>
+    ${isR?`<td><input type="text" class="un-in" placeholder="وحدة" style="width:65px"></td>`:''}
+    <td><input type="number" class="qt-in" placeholder="0" min="0" style="width:65px" oninput="calcR(this,'${prefix}')"></td>
+    <td><input type="number" class="pr-in" placeholder="${isR?'0.00':'وسطي'}" min="0" step="0.01" style="width:85px;${!isR?'background:rgba(245,158,11,0.07);color:var(--gold)':''}"
+      ${!isR?'readonly title="السعر الوسطي — تلقائي"':''} oninput="calcR(this,'${prefix}')"></td>
+    <td class="row-tot" style="color:var(--gold);font-weight:700;min-width:70px">0</td>
+    <td><button onclick="this.closest('tr').remove();calcGrand('${prefix}')"
+      style="background:none;border:none;cursor:pointer;color:var(--red);font-size:16px">✕</button></td>`;
+};
+
+W.snInput=(input,p)=>{
+  showAC(input,p,'sn');
+  const val=input.value.trim();if(!val)return;
+  const hit=CAT.find(c=>c.storeNum===val);
+  if(hit){const row=input.closest('tr');
+    const ni=row.querySelector('.na-in');if(ni&&!ni.value){ni.value=hit.name;fillRow(row,hit,p);}}
+};
+W.naInput=(input,p)=>{
+  showAC(input,p,'na');calcR(input,p);
+  const lc=input.value.trim().toLowerCase();if(!lc)return;
+  const hit=CAT.find(c=>c.name.toLowerCase()===lc);
+  if(hit){const row=input.closest('tr');
+    const si=row.querySelector('.sn-in');if(si&&!si.value&&hit.storeNum)si.value=hit.storeNum;
+    fillRow(row,hit,p);}
+};
+function fillRow(row,hit,p){
+  const ui=row.querySelector('.un-in');if(ui&&!ui.value&&hit.unit)ui.value=hit.unit;
+  if(p==='i'){const pi=row.querySelector('.pr-in');const w=wavg(hit.name,hit.storeNum);
+    if(pi&&w>0){pi.value=w.toFixed(4);calcR(pi,p);}}
+}
+W.calcR=(input,p)=>{
+  const row=input.closest('tr');
+  if(p==='i'){const pi=row.querySelector('.pr-in');const ni=row.querySelector('.na-in');const si=row.querySelector('.sn-in');
+    if(pi&&ni?.value){const w=wavg(ni.value,si?.value||'');if(w>0)pi.value=w.toFixed(4);}}
+  const q=parseFloat(row.querySelector('.qt-in')?.value)||0;
+  const pr=parseFloat(row.querySelector('.pr-in')?.value)||0;
+  row.querySelector('.row-tot').textContent=N(q*pr);
+  calcGrand(p);
+};
+W.calcGrand=p=>{
+  let t=0;document.querySelectorAll(`#${p}_items .row-tot`).forEach(td=>t+=parseFloat(td.textContent.replace(/,/g,''))||0);
+  document.getElementById(p+'-grand').textContent=N(t)+' د.ع';
+};
+W.showAC=(input,p,by)=>{
+  const portal=input.closest('.ac-wrap')?.querySelector('.ac-portal');if(!portal)return;
+  const term=input.value.trim().toLowerCase();
+  const list=CAT.filter(c=>by==='sn'?(c.storeNum&&c.storeNum.toLowerCase().includes(term)):(c.name&&c.name.toLowerCase().includes(term||''))).slice(0,15);
+  if(!list.length){portal.style.display='none';return;}
+  const w2=wavg;
+  portal.innerHTML=list.map(c=>`<div class="ac-item" onmousedown="event.preventDefault();pickAC(event,'${c.id}','${p}')">
+    <span class="ac-code">${c.storeNum||'—'}</span>
+    <span>${c.name}</span>
+    ${p==='i'?`<span style="font-size:10px;color:var(--gold);margin-right:auto">⌀${N(w2(c.name,c.storeNum))}</span>`:''}
+  </div>`).join('');
+  portal.style.display='block';
+};
+W.hideAC=input=>setTimeout(()=>{const p=input.closest('.ac-wrap')?.querySelector('.ac-portal');if(p)p.style.display='none';},250);
+W.pickAC=(e,cid,p)=>{
+  const c=CAT.find(x=>x.id===cid);if(!c)return;
+  const row=e.target.closest('tr');
+  const si=row.querySelector('.sn-in'),ni=row.querySelector('.na-in'),ui=row.querySelector('.un-in'),pi=row.querySelector('.pr-in');
+  if(si)si.value=c.storeNum||'';if(ni)ni.value=c.name;if(ui&&c.unit)ui.value=c.unit;
+  row.querySelectorAll('.ac-portal').forEach(x=>x.style.display='none');
+  if(p==='i'&&pi){const w=wavg(c.name,c.storeNum);if(w>0)pi.value=w.toFixed(4);}
+  const qi=row.querySelector('.qt-in');if(qi){qi.focus();W.calcR(qi,p);}
+};
+
+function collectRows(tbId){
+  const items=[];
+  document.querySelectorAll(`#${tbId} tr`).forEach(row=>{
+    const name=row.querySelector('.na-in')?.value.trim();if(!name)return;
+    const qty=parseFloat(row.querySelector('.qt-in')?.value)||0;if(!qty)return;
+    const price=parseFloat(row.querySelector('.pr-in')?.value)||0;
+    items.push({storeNum:row.querySelector('.sn-in')?.value.trim()||'',name,
+      unit:row.querySelector('.un-in')?.value.trim()||'',qty,price,total:qty*price});
+  });return items;
+}
+
+W.clearF=p=>{
+  const today=new Date().toISOString().split('T')[0];
+  ['date','docnum','notes'].forEach(f=>{const el=document.getElementById(p+'_'+f);if(el)el.value=f==='date'?today:'';});
+  ['r_wh','i_wh','r_pnum','r_pdate','r_supplier','i_rtype','i_rname','i_rperson'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById(p+'_items').innerHTML='';
+  document.getElementById(p+'-grand').textContent='0 د.ع';
+  W.addRow(p);
+};
+
+// ═══════════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════════
+W.go=(name,el)=>{
+  document.querySelectorAll('[id^="page-"]').forEach(p=>p.classList.add('hidden'));
+  document.getElementById('page-'+name)?.classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  el?.classList.add('active');
+  if(name==='daily'){const t=new Date().toISOString().split('T')[0];sv('d-from',t);sv('d-to',t);W.runDaily();}
+  if(name==='stocktake'){sv('stk-to',new Date().toISOString().split('T')[0]);W.runStocktake();}
+  if(name==='inventory') W.runInv();
+  if(name==='balance'){sv('bal-to',new Date().toISOString().split('T')[0]);W.runBal();}
+  if(name==='catalogue') W.renderCat();
+  if(name==='purchase') W.runPurchase();
+  if(name==='auditlog') W.loadAudit();
+};
+
+// ═══════════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════════
+const gv=id=>document.getElementById(id)?.value||'';
+const sv=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v;};
+const st=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+const N=n=>(parseFloat(n)||0).toLocaleString('ar-IQ');
+const fd=d=>d?new Date(d+'T12:00').toLocaleDateString('ar-IQ',{year:'numeric',month:'2-digit',day:'2-digit'}):'—';
+
+function toast(msg,type='i'){
+  const t=document.createElement('div');
+  t.className=`toast t${type}`;t.textContent=msg;
+  document.getElementById('toasts').appendChild(t);
+  setTimeout(()=>t.classList.add('show'),10);
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300);},3500);
+}
+
+
+
+// ═══════════════════════════════════════════════════════════
+//  🌓 THEME TOGGLE
+// ═══════════════════════════════════════════════════════════
+W.toggleTheme = () => {
+  const isLight = document.documentElement.classList.toggle('light');
+  localStorage.setItem('wh-theme', isLight ? 'light' : 'dark');
+  const knob = document.getElementById('theme-knob');
+  const btn  = document.getElementById('theme-toggle');
+  if(isLight){
+    if(knob){ knob.style.transform='translateX(-20px)'; knob.textContent='☀️'; }
+    if(btn)  btn.style.background='#e0ecff';
+  } else {
+    if(knob){ knob.style.transform='translateX(0)'; knob.textContent='🌙'; }
+    if(btn)  btn.style.background='';
+  }
+};
+
+// Apply saved theme on load
+(()=>{
+  const saved = localStorage.getItem('wh-theme');
+  if(saved === 'light'){
+    document.documentElement.classList.add('light');
+    // Defer DOM update until elements exist
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const knob = document.getElementById('theme-knob');
+      const btn  = document.getElementById('theme-toggle');
+      if(knob){ knob.style.transform='translateX(-20px)'; knob.textContent='☀️'; }
+      if(btn)  btn.style.background='#e0ecff';
+    });
+  }
+})();
+
+// Init
+document.addEventListener('DOMContentLoaded',()=>{
+  const today=new Date().toISOString().split('T')[0];
+  ['r_date','i_date'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=today;});
+  ['r','i'].forEach(p=>W.addRow(p));
+  document.getElementById('l-pass')?.addEventListener('keydown',e=>{if(e.key==='Enter')W.doLogin();});
+});
+</script>
+
+<!-- SheetJS for Excel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+/* Fix toast classes */
+.ts,.te,.ti{border-width:1px;border-style:solid}
+.ts{border-color:var(--green);color:var(--green)}
+.te{border-color:var(--red);color:var(--red)}
+.ti{border-color:var(--accent);color:var(--accent)}
+</style>
+</body>
+</html>
